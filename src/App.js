@@ -4,8 +4,8 @@ import { AppBar, Toolbar, IconButton, Drawer, List, ListItem, ListItemText, make
 import MenuIcon from '@material-ui/icons/Menu';
 import ShowUser from './users/showuser';
 import EditUser from './users/edituser'; 
-import Settings from './settings'; // Assuming you have a Settings component
-
+import ShowTrip from './trips/showtrip'; 
+import EditTrip from './trips/edittrip'; 
 const useStyles = makeStyles({
   list: {
     width: 250,
@@ -47,13 +47,13 @@ function App() {
           >
             <List>
               <Link to="/" className={classes.linkText}>
-                <ListItem button key="Home">
-                  <ListItemText primary="Home" />
+                <ListItem button key="ข้อมูลผู้ใช้">
+                  <ListItemText primary="ข้อมูลผู้ใช้" />
                 </ListItem>
               </Link>
-              <Link to="/edituser" className={classes.linkText}> 
-                <ListItem button key="Edit User">
-                  <ListItemText primary="Edit User" />
+              <Link to="/trips" className={classes.linkText}> 
+                <ListItem button key="ข้อมูลทริป">
+                  <ListItemText primary="ข้อมูลทริป" />
                 </ListItem>
               </Link>
            
@@ -63,7 +63,8 @@ function App() {
         <Routes>
           <Route path="/" element={<ShowUser />} />
           <Route path="/edituser/:userId" element={<EditUser />} />
-          <Route path="/settings" element={<Settings />} />
+          <Route path="/edittrip/:userId" element={<EditTrip />} />
+          <Route path="/trips" element={<ShowTrip />} />
         </Routes>
       </div>
     </Router>
