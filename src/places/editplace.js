@@ -12,9 +12,11 @@ function EditPlace() {
   const { userId } = useParams();
   const [userData, setUserData] = useState({});
   const [profileImage, setProfileImage] = useState(null);
-  const [tripStatus, settripStatus] = useState('');
-  const [tripStartDate, setTripStartDate] = useState(new Date()); // State for trip start date
-  const [tripEndDate, setTripEndDate] = useState(new Date()); // State for trip end date
+  const [placestatus, setplaceStatus] = useState('');
+  const [placerun, setrunStatus] = useState('');
+  const [placeadd, setaddStatus] = useState('');
+  const [placetimestart, setplacetimestart] = useState(new Date()); // State for trip start date
+  const [placetimeend, setplacetimeend] = useState(new Date()); // State for trip end date
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -23,13 +25,15 @@ function EditPlace() {
         const userSnapshot = await getDoc(userDoc);
         if (userSnapshot.exists()) {
           setUserData(userSnapshot.data());
-          settripStatus(userSnapshot.data().tripStatus || '');
+          setplaceStatus(userSnapshot.data().placestatus || '');
+          setrunStatus(userSnapshot.data().placerun || '');
+          setaddStatus(userSnapshot.data().placeadd || '');
           // Set trip start and end dates if available
-          if (userSnapshot.data().tripStartDate) {
-            setTripStartDate(new Date(userSnapshot.data().tripStartDate.seconds * 1000));
+          if (userSnapshot.data().placetimestart) {
+            setplacetimestart(new Date(userSnapshot.data().placetimestart.seconds * 1000));
           }
-          if (userSnapshot.data().tripEndDate) {
-            setTripEndDate(new Date(userSnapshot.data().tripEndDate.seconds * 1000));
+          if (userSnapshot.data().placetimeend) {
+            setplacetimeend(new Date(userSnapshot.data().placetimeend.seconds * 1000));
           }
 
         } else {
@@ -71,49 +75,105 @@ function EditPlace() {
     setProfileImage(imageFile);
   };
 
-  const handleGenderChange = (e) => {
+  const handlePlaceChange3 = (e) => {
     const value = e.target.value;
-    settripStatus(value);
+    setplaceStatus(value);
     setUserData((prevData) => ({
       ...prevData,
-      tripStatus: value,
+      placestatus: value,
     }));
   };
-
+  const handlePlaceChange2 = (e) => {
+    const value = e.target.value;
+    setaddStatus(value);
+    setUserData((prevData) => ({
+      ...prevData,
+      placeadd: value,
+    }));
+  };
+  const handlePlaceChange = (e) => {
+    const value = e.target.value;
+    setrunStatus(value);
+    setUserData((prevData) => ({
+      ...prevData,
+      placerun: value,
+    }));
+  };
   return (
     <div style={{ paddingTop: '60px' }}>
       <div className="edit-user-container">
-        <h1>แก้ไขทริป</h1>
+        <h1>แก้ไขสถานที่</h1>
         <form>
           <div className="form-group">
-            <label>tripCreate:</label>
+            <label>placename:</label>
             <input
               type="text"
-              name="tripCreate"
-              value={userData.tripCreate || ''}
+              name="placename"
+              value={userData.placename || ''}
               onChange={handleChange}
               className="input"
             />
           </div>
           <div className="form-group">
-            <label>tripName:</label>
+            <label>placeaddress:</label>
             <input
               type="text"
-              name="tripName"
-              value={userData.tripName || ''}
+              name="placeaddress"
+              value={userData.placeaddress || ''}
               onChange={handleChange}
               className="input"
             />
           </div>
           <div className="form-group">
-            <label>tripStartDate:</label>
+            <label>placeprovince:</label>
+            <input
+              type="text"
+              name="placeprovince"
+              value={userData.placeprovince || ''}
+              onChange={handleChange}
+              className="input"
+            />
+          </div>
+          <div className="form-group">
+            <label>placetripid:</label>
+            <input
+              type="text"
+              name="placetripid"
+              value={userData.placetripid || ''}
+              onChange={handleChange}
+              className="input"
+            />
+          </div>
+          <div className="form-group">
+            <label>placeLatitude:</label>
+            <input
+              type="text"
+              name="placeLatitude"
+              value={userData.placeLatitude || ''}
+              onChange={handleChange}
+              className="input"
+            />
+          </div>
+          <div className="form-group">
+            <label>placeLongitude:</label>
+            <input
+              type="text"
+              name="placeLongitude"
+              value={userData.placeLongitude || ''}
+              onChange={handleChange}
+              className="input"
+            />
+          </div>
+         
+          <div className="form-group">
+            <label>placetimestart:</label>
             <DatePicker
-              selected={tripStartDate}
+              selected={placetimestart}
               onChange={(date) => {
-                setTripStartDate(date);
+                setplacetimestart(date);
                 setUserData((prevData) => ({
                   ...prevData,
-                  tripStartDate: date,
+                  placetimestart: date,
                 }));
               }}
               showTimeSelect
@@ -125,14 +185,14 @@ function EditPlace() {
             />
           </div>
           <div className="form-group">
-            <label>tripEndDate:</label>
+            <label>placetimeend:</label>
             <DatePicker
-              selected={tripEndDate}
+              selected={placetimeend}
               onChange={(date) => {
-                setTripEndDate(date);
+                setplacetimeend(date);
                 setUserData((prevData) => ({
                   ...prevData,
-                  tripEndDate: date,
+                  placetimeend: date,
                 }));
               }}
               showTimeSelect
@@ -144,20 +204,52 @@ function EditPlace() {
             />
           </div>
           <div className="form-group">
-            <label>tripStatus:</label>
+            <label>useruid</label>
+            <input
+              type="text"
+              name="useruid"
+              value={userData.useruid || ''}
+              onChange={handleChange}
+              className="input"
+            />
+          </div>
+          <div className="form-group">
+            <label>placeadd:</label>
             <select
-              name="tripStatus"
-              value={tripStatus}
-              onChange={handleGenderChange}
+              name="placeadd"
+              value={placeadd}
+              onChange={handlePlaceChange}
               className="input"
             >
-              <option value="">เลือกสถานะ</option>
-              <option value="ยังไม่เริ่มต้น">ยังไม่เริ่มต้น</option>
-              <option value="กำลังดำเนินการ">กำลังดำเนินการ</option>
-              <option value="สิ้นสุด">สิ้นสุด</option>
+              <option value="Yes">Yes</option>
+              <option value="No">No</option>
             </select>
           </div>
-  
+          <div className="form-group">
+            <label>placerun:</label>
+            <select
+              name="placerun"
+              value={placerun}
+              onChange={handlePlaceChange2}
+              className="input"
+            >
+              <option value="Start">Start</option>
+              <option value="Running">Running</option>
+              <option value="End">End</option>
+            </select>
+          </div>
+          <div className="form-group">
+            <label>placestatus:</label>
+            <select
+              name="placestatus"
+              value={placestatus}
+              onChange={handlePlaceChange3}
+              className="input"
+            >
+              <option value="Added">Added</option>
+              <option value="Wait">Wait</option>
+            </select>
+          </div>
           <button type="button" onClick={handleUpdateUser} className="button">
             อัปเดต
           </button>

@@ -53,7 +53,6 @@ function ShowPlace() {
             <th>placestart</th>
             <th>placetimestart</th>
             <th>placetimeend</th>
-            <th>placeLongitude</th>
             <th>useruid</th>
             <th>placeadd</th>
             <th>placerun</th>
@@ -83,7 +82,7 @@ function ShowPlace() {
               <td>{user.placewhogo.length}</td>
               <td><img src={user.placepicUrl} alt="Profile" /></td>
               <td>
-              <Link to={`/edittrip/${user.uid}`}> {/* Use Link to navigate to edit user page */}
+              <Link to={`/editplace/${user.uid}`}> {/* Use Link to navigate to edit user page */}
                   <img
                     src="/pencil.png"
                     alt="Edit"
