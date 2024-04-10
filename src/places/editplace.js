@@ -4,11 +4,11 @@ import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { firestore } from '../firebase';
 import DatePicker from 'react-datepicker'; // Import DatePicker
 import 'react-datepicker/dist/react-datepicker.css'; // Import DatePicker CSS
-import './edittrip.css'; // Import CSS file for styling
+import './editplace.css'; // Import CSS file for styling
 import { ref, uploadBytes } from 'firebase/storage';
 import { storage } from '../firebase'; // import Firebase storage instance
 
-function EditTrip() {
+function EditPlace() {
   const { userId } = useParams();
   const [userData, setUserData] = useState({});
   const [profileImage, setProfileImage] = useState(null);
@@ -19,7 +19,7 @@ function EditTrip() {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const userDoc = doc(firestore, 'trips', userId);
+        const userDoc = doc(firestore, 'places', userId);
         const userSnapshot = await getDoc(userDoc);
         if (userSnapshot.exists()) {
           setUserData(userSnapshot.data());
@@ -45,41 +45,16 @@ function EditTrip() {
 
   const handleUpdateUser = async () => {
     try {
-      if (profileImage) {
-        // อัปโหลดรูปภาพไปยัง Firebase Storage
-    
-        // สร้าง URL ของรูปภาพที่อัปโหลด
-        const profileImageUrl = await uploadProfileImageToStorage(profileImage, userId);
-        // อัปเดต tripProfileUrl ในข้อมูลผู้ใช้
-        setUserData((prevData) => ({
-          ...prevData,
-          tripProfileUrl: profileImageUrl,
-        }));
-      }
-      const userDoc = doc(firestore, 'trips', userId);
+   
+   
+      const userDoc = doc(firestore, 'places', userId);
       await updateDoc(userDoc, userData);
       console.log('User updated successfully!');
     } catch (error) {
       console.error('Error updating user: ', error);
     }
   };
-  const uploadProfileImageToStorage = async (imageFile, userId) => {
-    try {
-      const storageRef = ref(storage, `trip/profiletrip/${userId}.jpg`);
-      await uploadBytes(storageRef, imageFile);
-      console.log('Image uploaded successfully!');
-      // สร้าง URL ของรูปภาพที่อัปโหลด
-      const profileImageUrl = `https://firebasestorage.googleapis.com/v0/b/${storage.app.options.storageBucket}/o/${encodeURIComponent('trip/profiletrip/' + userId + '.jpg')}?alt=media`;
-      
-      console.log('Profile image URL:', profileImageUrl);
-      
-      return profileImageUrl; // ส่งกลับ URL ของรูปภาพ
-    } catch (error) {
-      console.error('Error uploading image:', error);
-      return null; // หากเกิดข้อผิดพลาดในการอัปโหลด ส่งค่า null กลับไป
-    }
-  };
-  
+
 
   
   const handleChange = (e) => {
@@ -182,16 +157,7 @@ function EditTrip() {
               <option value="สิ้นสุด">สิ้นสุด</option>
             </select>
           </div>
-          <div className="form-group">
-            <label>tripProfileUrl:</label>
-            <input
-              type="file"
-              name="tripProfileUrl"
-              accept="image/*"
-              onChange={handleImageChange}
-              className="input"
-            />
-          </div>
+  
           <button type="button" onClick={handleUpdateUser} className="button">
             อัปเดต
           </button>
@@ -201,4 +167,4 @@ function EditTrip() {
   );
 }
 
-export default EditTrip;
+export default EditPlace;

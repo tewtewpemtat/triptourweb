@@ -6,6 +6,8 @@ import ShowUser from './users/showuser';
 import EditUser from './users/edituser'; 
 import ShowTrip from './trips/showtrip'; 
 import EditTrip from './trips/edittrip'; 
+import ShowPlace from './places/showplace'; 
+import EditPlace from './places/editplace'; 
 const useStyles = makeStyles({
   list: {
     width: 250,
@@ -56,7 +58,11 @@ function App() {
                   <ListItemText primary="ข้อมูลทริป" />
                 </ListItem>
               </Link>
-           
+              <Link to="/places" className={classes.linkText}> 
+                <ListItem button key="ข้อมูลสถานที่">
+                  <ListItemText primary="ข้อมูลสถานที่" />
+                </ListItem>
+              </Link>
             </List>
           </div>
         </Drawer>
@@ -64,7 +70,9 @@ function App() {
           <Route path="/" element={<ShowUser />} />
           <Route path="/edituser/:userId" element={<EditUser />} />
           <Route path="/edittrip/:userId" element={<EditTrip />} />
+          <Route path="/editplace/:userId" element={<EditPlace />} />
           <Route path="/trips" element={<ShowTrip />} />
+          <Route path="/places" element={<ShowPlace />} />
         </Routes>
       </div>
     </Router>

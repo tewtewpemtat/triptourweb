@@ -3,6 +3,8 @@ import { useParams } from 'react-router-dom';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { firestore } from '../firebase';
 import './edituser.css'; // Import CSS file for styling
+import { ref, uploadBytes } from 'firebase/storage';
+import { storage } from '../firebase'; // import Firebase storage instance
 
 function EditUser() {
   const { userId } = useParams();
@@ -31,6 +33,17 @@ function EditUser() {
 
   const handleUpdateUser = async () => {
     try {
+      if (profileImage) {
+        // อัปโหลดรูปภาพไปยัง Firebase Storage
+    
+        // สร้าง URL ของรูปภาพที่อัปโหลด
+        const profileImageLink = await uploadProfileImageToStorage(profileImage, userId);
+        // อัปเดต tripProfileUrl ในข้อมูลผู้ใช้
+        setUserData((prevData) => ({
+          ...prevData,
+          profileImageUrl: profileImageLink,
+        }));
+      }
       const userDoc = doc(firestore, 'users', userId);
       await updateDoc(userDoc, userData);
       console.log('User updated successfully!');
@@ -51,7 +64,23 @@ function EditUser() {
     const imageFile = e.target.files[0];
     setProfileImage(imageFile);
   };
-
+  const uploadProfileImageToStorage = async (imageFile, userId) => {
+    try {
+      const storageRef = ref(storage, `profilepic/${userId}/profile.jpg`);
+      await uploadBytes(storageRef, imageFile);
+      console.log('Image uploaded successfully!');
+      // สร้าง URL ของรูปภาพที่อัปโหลด
+      const profileImageUrl = `https://firebasestorage.googleapis.com/v0/b/${storage.app.options.storageBucket}/o/${encodeURIComponent('trip/profiletrip/' + userId + '.jpg')}?alt=media`;
+      
+      console.log('Profile image URL:', profileImageUrl);
+      
+      return profileImageUrl; // ส่งกลับ URL ของรูปภาพ
+    } catch (error) {
+      console.error('Error uploading image:', error);
+      return null; // หากเกิดข้อผิดพลาดในการอัปโหลด ส่งค่า null กลับไป
+    }
+  };
+  
   const handleGenderChange = (e) => {
     const value = e.target.value;
     setGender(value);

@@ -1,6 +1,7 @@
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 import { getFirestore, doc, getDoc, deleteDoc } from "firebase/firestore"; // เพิ่ม getDoc และ deleteDoc
+import { getStorage } from "firebase/storage"; // เพิ่ม getStorage
 
 const firebaseConfig = {
   apiKey: "AIzaSyDgzISmUfbwWBHyrqyyma9AQQ_Tctimlt4",
@@ -16,4 +17,5 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
 const firestore = getFirestore(app); 
-export { app, analytics, firestore, doc, getDoc, deleteDoc }; // เพิ่มฟังก์ชัน doc, getDoc และ deleteDoc
+const storage = getStorage(app); // เพิ่มการเข้าถึง Firebase Storage
+export { app, analytics, storage,firestore, doc, getDoc, deleteDoc }; // เพิ่มฟังก์ชัน doc, getDoc และ deleteDoc

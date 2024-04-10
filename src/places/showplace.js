@@ -2,15 +2,15 @@
 import React, { useEffect, useState } from 'react';
 import { firestore } from '../firebase'; // เรียกใช้ firestore
 import { collection, getDocs, doc, deleteDoc } from 'firebase/firestore'; // เรียกใช้งาน collection, getDocs, doc และ deleteDoc จาก Firebase Firestore
-import './showtrip.css'; // Corrected CSS import path
+import './editplace.css'; // Corrected CSS import path
 import { BrowserRouter as Router, Routes, Route, Link,Navigate } from 'react-router-dom';
-function ShowTrip() {
+function ShowPlace() {
   const [tripData, setUserData] = useState([]);
 
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const usersRef = collection(firestore, 'trips');
+        const usersRef = collection(firestore, 'places');
         const usersSnapshot = await getDocs(usersRef);
         const userDataArray = usersSnapshot.docs.map(doc => {
           const data = doc.data();
@@ -28,7 +28,7 @@ function ShowTrip() {
 
   const handleDeleteUser = async (uid) => {
     try {
-      await deleteDoc(doc(firestore, 'users', uid));
+      await deleteDoc(doc(firestore, 'places', uid));
       const updatedUserData = tripData.filter(user => user.uid !== uid);
       setUserData(updatedUserData);
     } catch (error) {
@@ -37,20 +37,29 @@ function ShowTrip() {
   };
 
   return (
+    
     <div style={{ paddingTop: '70px' }}>
-      <h1>ข้อมูลทริป</h1>
+      <h1>ข้อมูลสถานที่</h1>
       <table>
         <thead>
           <tr>  
-          <th>UidTrip</th>
-            <th>tripCreate</th>
-            <th>tripName</th>
-            <th>tripStartDate</th>
-            <th>tripEndDate</th>
-            <th>tripLimit</th>
-            <th>tripJoin</th>
-            <th>tripProfileUrl</th>
-            <th>tripStatus</th>
+          <th>ID</th>
+            <th>placename</th>
+            <th>placeaddress</th>
+            <th>placeprovince</th>
+            <th>placetripid</th>
+            <th>placeLatitude</th>
+            <th>placeLongitude</th>
+            <th>placestart</th>
+            <th>placetimestart</th>
+            <th>placetimeend</th>
+            <th>placeLongitude</th>
+            <th>useruid</th>
+            <th>placeadd</th>
+            <th>placerun</th>
+            <th>placestatus</th>
+            <th>placewhogo</th>
+            <th>placepicUrl</th>
             <th>Action</th> {/* เพิ่ม column สำหรับ row action */}
           </tr>
         </thead>
@@ -58,15 +67,21 @@ function ShowTrip() {
           {tripData.map((user, index) => (
             <tr key={index}>
               <td>{user.uid}</td>
-              <td>{user.tripCreate}</td> {/* แสดง Document ID */}
-              <td>{user.tripName}</td>
-              <td>{user.tripStartDate ? user.tripStartDate.toDate().toLocaleString() : ''}</td>
-              <td>{user.tripEndDate ? user.tripEndDate.toDate().toLocaleString() : ''}</td>
-              <td>{user.tripLimit}</td>
-              <td>{user.tripJoin.length}</td>
-    
-              <td><img src={user.tripProfileUrl} alt="Profile" /></td>
-              <td>{user.tripStatus}</td>
+              <td>{user.placename}</td> {/* แสดง Document ID */}
+              <td>{user.placeaddress}</td>
+              <td>{user.placeprovince}</td>
+              <td>{user.placetripid}</td>
+              <td>{user.placeLatitude}</td>
+              <td>{user.placeLongitude}</td>
+              <td>Latitude: {user.placestart.latitude}, Longitude: {user.placestart.longitude}</td>
+              <td>{user.placetimestart ? user.placetimestart.toDate().toLocaleString() : ''}</td>
+              <td>{user.placetimeend ? user.placetimeend.toDate().toLocaleString() : ''}</td>
+              <td>{user.useruid}</td>
+              <td>{user.placeadd}</td>
+              <td>{user.placerun}</td>
+              <td>{user.placestatus}</td>
+              <td>{user.placewhogo.length}</td>
+              <td><img src={user.placepicUrl} alt="Profile" /></td>
               <td>
               <Link to={`/edittrip/${user.uid}`}> {/* Use Link to navigate to edit user page */}
                   <img
@@ -90,4 +105,4 @@ function ShowTrip() {
   );
 }
 
-export default ShowTrip;
+export default ShowPlace;
