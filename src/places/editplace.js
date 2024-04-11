@@ -214,6 +214,52 @@ function EditPlace() {
             />
           </div>
           <div className="form-group">
+  <label>placewhogo:</label>
+  <ul>
+    {userData.placewhogo && userData.placewhogo.map((item, index) => (
+      <li key={index}>
+        <input
+          type="text"
+          value={item}
+          onChange={(e) => {
+            const updatedPlacewhogo = [...userData.placewhogo];
+            updatedPlacewhogo[index] = e.target.value;
+            setUserData((prevData) => ({
+              ...prevData,
+              placewhogo: updatedPlacewhogo,
+            }));
+          }}
+        />
+        <button
+          type="button"
+          onClick={() => {
+            const updatedPlacewhogo = [...userData.placewhogo];
+            updatedPlacewhogo.splice(index, 1);
+            setUserData((prevData) => ({
+              ...prevData,
+              placewhogo: updatedPlacewhogo,
+            }));
+          }}
+        >
+          ลบ
+        </button>
+      </li>
+    ))}
+  </ul>
+  <button
+    type="button"
+    onClick={() => {
+      setUserData((prevData) => ({
+        ...prevData,
+        placewhogo: [...prevData.placewhogo, ''], // เพิ่มค่าใหม่เป็นสตริงเปล่า
+      }));
+    }}
+  >
+    เพิ่ม
+  </button>
+</div>
+
+          <div className="form-group">
             <label>placeadd:</label>
             <select
               name="placeadd"

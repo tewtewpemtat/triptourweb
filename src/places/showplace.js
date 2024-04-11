@@ -3,9 +3,19 @@ import React, { useEffect, useState } from 'react';
 import { firestore } from '../firebase'; // เรียกใช้ firestore
 import { collection, getDocs, doc, deleteDoc } from 'firebase/firestore'; // เรียกใช้งาน collection, getDocs, doc และ deleteDoc จาก Firebase Firestore
 import './editplace.css'; // Corrected CSS import path
-import { BrowserRouter as Router, Routes, Route, Link,Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Link, useNavigate } from 'react-router-dom';
+import Navbar from '../navbar'; 
+
 function ShowPlace() {
   const [tripData, setUserData] = useState([]);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const authToken = localStorage.getItem('authToken');
+    if (!authToken) {
+      navigate('/login', { replace: true });
+    }
+  }, [navigate]);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -38,7 +48,8 @@ function ShowPlace() {
 
   return (
     
-    <div style={{ paddingTop: '70px' }}>
+    <div>
+         <Navbar/>
       <h1>ข้อมูลสถานที่</h1>
       <table>
         <thead>

@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import React, { useState , useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, Link ,  Navigate} from 'react-router-dom';
 import { AppBar, Toolbar, IconButton, Drawer, List, ListItem, ListItemText, makeStyles } from '@material-ui/core';
+import ExitToAppIcon from '@material-ui/icons/ExitToApp'; // Import ExitToAppIcon for logout button
 import MenuIcon from '@material-ui/icons/Menu';
 import ShowUser from './users/showuser';
 import EditUser from './users/edituser'; 
@@ -8,66 +9,15 @@ import ShowTrip from './trips/showtrip';
 import EditTrip from './trips/edittrip'; 
 import ShowPlace from './places/showplace'; 
 import EditPlace from './places/editplace'; 
-const useStyles = makeStyles({
-  list: {
-    width: 250,
-  },
-  linkText: {
-    textDecoration: 'none',
-    color: 'black',
-  },
-});
+import Login from './authen/login'; 
 
 function App() {
-  const classes = useStyles();
-  const [openDrawer, setOpenDrawer] = useState(false);
-
-  const handleDrawerOpen = () => {
-    setOpenDrawer(true);
-  };
-
-  const handleDrawerClose = () => {
-    setOpenDrawer(false);
-  };
-
   return (
     <Router>
       <div>
-        <AppBar position="static">
-          <Toolbar>
-            <IconButton edge="start" color="inherit" aria-label="menu" onClick={handleDrawerOpen}>
-              <MenuIcon />
-            </IconButton>
-          </Toolbar>
-        </AppBar>
-        <Drawer anchor="left" open={openDrawer} onClose={handleDrawerClose}>
-          <div
-            className={classes.list}
-            role="presentation"
-            onClick={handleDrawerClose}
-            onKeyDown={handleDrawerClose}
-          >
-            <List>
-              <Link to="/" className={classes.linkText}>
-                <ListItem button key="ข้อมูลผู้ใช้">
-                  <ListItemText primary="ข้อมูลผู้ใช้" />
-                </ListItem>
-              </Link>
-              <Link to="/trips" className={classes.linkText}> 
-                <ListItem button key="ข้อมูลทริป">
-                  <ListItemText primary="ข้อมูลทริป" />
-                </ListItem>
-              </Link>
-              <Link to="/places" className={classes.linkText}> 
-                <ListItem button key="ข้อมูลสถานที่">
-                  <ListItemText primary="ข้อมูลสถานที่" />
-                </ListItem>
-              </Link>
-            </List>
-          </div>
-        </Drawer>
         <Routes>
-          <Route path="/" element={<ShowUser />} />
+        <Route path="/login" element={<Login />} /> {/* Login page */}
+          <Route path="/users" element={<ShowUser />} />
           <Route path="/edituser/:userId" element={<EditUser />} />
           <Route path="/edittrip/:userId" element={<EditTrip />} />
           <Route path="/editplace/:userId" element={<EditPlace />} />

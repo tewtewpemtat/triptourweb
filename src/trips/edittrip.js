@@ -169,6 +169,52 @@ function EditTrip() {
             />
           </div>
           <div className="form-group">
+  <label>tripJoin:</label>
+  <ul>
+    {userData.tripJoin && userData.tripJoin.map((item, index) => (
+      <li key={index}>
+        <input
+          type="text"
+          value={item}
+          onChange={(e) => {
+            const updatedtripJoin = [...userData.tripJoin];
+            updatedtripJoin[index] = e.target.value;
+            setUserData((prevData) => ({
+              ...prevData,
+              tripJoin: updatedtripJoin,
+            }));
+          }}
+        />
+        <button
+          type="button"
+          onClick={() => {
+            const updatedtripJoin = [...userData.tripJoin];
+            updatedtripJoin.splice(index, 1);
+            setUserData((prevData) => ({
+              ...prevData,
+              tripJoin: updatedtripJoin,
+            }));
+          }}
+        >
+          ลบ
+        </button>
+      </li>
+    ))}
+  </ul>
+  <button
+    type="button"
+    onClick={() => {
+      setUserData((prevData) => ({
+        ...prevData,
+        tripJoin: [...prevData.tripJoin, ''], // เพิ่มค่าใหม่เป็นสตริงเปล่า
+      }));
+    }}
+  >
+    เพิ่ม
+  </button>
+</div>
+
+          <div className="form-group">
             <label>tripStatus:</label>
             <select
               name="tripStatus"
