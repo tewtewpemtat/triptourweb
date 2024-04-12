@@ -73,12 +73,15 @@ function ShowUser() {
   }, []);
 
   const handleDeleteUser = async (uid) => {
-    try {
-      await deleteDoc(doc(firestore, "users", uid));
-      const updatedUserData = userData.filter((user) => user.uid !== uid);
-      setUserData(updatedUserData);
-    } catch (error) {
-      console.error("Error deleting user: ", error);
+    const confirmed = window.confirm("โปรดยืนยันการลบข้อมูล");
+    if (confirmed) {
+      try {
+        await deleteDoc(doc(firestore, "users", uid));
+        const updatedUserData = userData.filter((user) => user.uid !== uid);
+        setUserData(updatedUserData);
+      } catch (error) {
+        console.error("Error deleting user: ", error);
+      }
     }
   };
 

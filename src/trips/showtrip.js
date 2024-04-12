@@ -79,12 +79,16 @@ function ShowTrip() {
   }, []);
 
   const handleDeleteUser = async (uid) => {
-    try {
-      await deleteDoc(doc(firestore, "users", uid));
-      const updatedUserData = tripData.filter((user) => user.uid !== uid);
-      setUserData(updatedUserData);
-    } catch (error) {
-      console.error("Error deleting user: ", error);
+    const confirmed = window.confirm("โปรดยืนยันการลบข้อมูล");
+    if (confirmed) {
+      try {
+        await deleteDoc(doc(firestore, "trips", uid));
+        const updatedUserData = tripData.filter((user) => user.uid !== uid);
+        setUserData(updatedUserData);
+        alert("ลบข้อมูลสำเร็จ");
+      } catch (error) {
+        console.error("Error deleting user: ", error);
+      }
     }
   };
 
