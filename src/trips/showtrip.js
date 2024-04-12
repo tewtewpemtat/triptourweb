@@ -1,35 +1,77 @@
 // TablePage.js
-import React, { useEffect, useState } from 'react';
-import { firestore } from '../firebase'; // เรียกใช้ firestore
-import { collection, getDocs, doc, deleteDoc } from 'firebase/firestore'; // เรียกใช้งาน collection, getDocs, doc และ deleteDoc จาก Firebase Firestore
-import './showtrip.css'; // Corrected CSS import path
-import { BrowserRouter as Router, Routes, Route, Link, useNavigate } from 'react-router-dom';
-import Navbar from '../navbar'; 
+import React, { useEffect, useState } from "react";
+import { firestore } from "../firebase"; // เรียกใช้ firestore
+import { collection, getDocs, doc, deleteDoc } from "firebase/firestore"; // เรียกใช้งาน collection, getDocs, doc และ deleteDoc จาก Firebase Firestore
+import "./showtrip.css"; // Corrected CSS import path
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Link,
+  useNavigate,
+} from "react-router-dom";
+import Navbar from "../navbar";
+import {
+  Typography,
+  Box,
+  Chip,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Card,
+  CardContent,
+} from "@mui/material";
+import { makeStyles } from "@material-ui/core/styles";
+import CreateIcon from "@mui/icons-material/Create";
+import DeleteIcon from "@mui/icons-material/Delete";
+import IconButton from "@mui/material/IconButton";
 
+const useStyles = makeStyles((theme) => ({
+  table: {
+    borderCollapse: "collapse",
+    width: "100%",
+
+    "& th": {
+      borderBottom: "1px solid #ddd",
+      background: theme.palette.primary.main,
+      color: theme.palette.primary.contrastText,
+      padding: theme.spacing(1, 2),
+      textAlign: "left",
+    },
+    "& td": {
+      borderBottom: "1px solid #ddd",
+      padding: theme.spacing(1, 2),
+      textAlign: "left",
+    },
+  },
+}));
 function ShowTrip() {
   const [tripData, setUserData] = useState([]);
   const navigate = useNavigate();
-
+  const classes = useStyles();
   useEffect(() => {
-    const authToken = localStorage.getItem('authToken');
+    const authToken = localStorage.getItem("authToken");
     if (!authToken) {
-      navigate('/login', { replace: true });
+      navigate("/login", { replace: true });
     }
   }, [navigate]);
 
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const usersRef = collection(firestore, 'trips');
+        const usersRef = collection(firestore, "trips");
         const usersSnapshot = await getDocs(usersRef);
-        const userDataArray = usersSnapshot.docs.map(doc => {
+        const userDataArray = usersSnapshot.docs.map((doc) => {
           const data = doc.data();
           data.uid = doc.id; // เพิ่ม Document ID ลงในข้อมูลผู้ใช้
           return data;
         });
         setUserData(userDataArray);
       } catch (error) {
-        console.error('Error fetching user data: ', error);
+        console.error("Error fetching user data: ", error);
       }
     };
 
@@ -38,65 +80,206 @@ function ShowTrip() {
 
   const handleDeleteUser = async (uid) => {
     try {
-      await deleteDoc(doc(firestore, 'users', uid));
-      const updatedUserData = tripData.filter(user => user.uid !== uid);
+      await deleteDoc(doc(firestore, "users", uid));
+      const updatedUserData = tripData.filter((user) => user.uid !== uid);
       setUserData(updatedUserData);
     } catch (error) {
-      console.error('Error deleting user: ', error);
+      console.error("Error deleting user: ", error);
     }
   };
 
   return (
     <div>
-      <Navbar/>
-      <h1>ข้อมูลทริป</h1>
-      <table>
-        <thead>
-          <tr>  
-          <th>UidTrip</th>
-            <th>tripCreate</th>
-            <th>tripName</th>
-            <th>tripStartDate</th>
-            <th>tripEndDate</th>
-            <th>tripLimit</th>
-            <th>tripJoin</th>
-            <th>tripProfileUrl</th>
-            <th>tripStatus</th>
-            <th>Action</th> {/* เพิ่ม column สำหรับ row action */}
-          </tr>
-        </thead>
-        <tbody>
-          {tripData.map((user, index) => (
-            <tr key={index}>
-              <td>{user.uid}</td>
-              <td>{user.tripCreate}</td> {/* แสดง Document ID */}
-              <td>{user.tripName}</td>
-              <td>{user.tripStartDate ? user.tripStartDate.toDate().toLocaleString() : ''}</td>
-              <td>{user.tripEndDate ? user.tripEndDate.toDate().toLocaleString() : ''}</td>
-              <td>{user.tripLimit}</td>
-              <td>{user.tripJoin.length}</td>
-    
-              <td><img src={user.tripProfileUrl} alt="Profile" /></td>
-              <td>{user.tripStatus}</td>
-              <td>
-              <Link to={`/edittrip/${user.uid}`}> {/* Use Link to navigate to edit user page */}
-                  <img
-                    src="/pencil.png"
-                    alt="Edit"
-                    className="action-icon"
-                  />
-                </Link>
-                <img
-                  src="/delete.png"
-                  alt="Delete"
-                  className="action-icon"
-                  onClick={() => handleDeleteUser(user.uid)}
-                />
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <Navbar />
+      <Box sx={{ marginLeft: 25 }}>
+        <Card variant="outlined">
+          <CardContent>
+            <Box sx={{ overflow: { xs: "auto", sm: "unset" } }}>
+              <Table aria-label="simple table" className={classes.table}>
+                <TableHead>
+                  <TableCell style={{ backgroundColor: "transparent" }}>
+                    <Typography
+                      variant="subtitle1"
+                      style={{
+                        fontSize: "13px",
+                        fontWeight: "bold",
+                        fontFamily: "Arial, sans-serif",
+                        color: "#4a5568",
+                      }}
+                    >
+                      ID
+                    </Typography>
+                  </TableCell>
+                  <TableCell style={{ backgroundColor: "transparent" }}>
+                    <Typography
+                      variant="subtitle1"
+                      style={{
+                        fontSize: "12px",
+                        fontWeight: "bold",
+                        fontFamily: "Arial, sans-serif",
+                        color: "#4a5568",
+                      }}
+                    >
+                      TRIPCREATE
+                    </Typography>
+                  </TableCell>
+                  <TableCell style={{ backgroundColor: "transparent" }}>
+                    <Typography
+                      variant="subtitle1"
+                      style={{
+                        fontSize: "12px",
+                        fontWeight: "bold",
+                        fontFamily: "Arial, sans-serif",
+                        color: "#4a5568",
+                      }}
+                    >
+                      NAME
+                    </Typography>
+                  </TableCell>
+                  <TableCell style={{ backgroundColor: "transparent" }}>
+                    <Typography
+                      variant="subtitle1"
+                      style={{
+                        fontSize: "12px",
+                        fontWeight: "bold",
+                        fontFamily: "Arial, sans-serif",
+                        color: "#4a5568",
+                      }}
+                    >
+                      STARTDATE
+                    </Typography>
+                  </TableCell>
+                  <TableCell style={{ backgroundColor: "transparent" }}>
+                    <Typography
+                      variant="subtitle1"
+                      style={{
+                        fontSize: "12px",
+                        fontWeight: "bold",
+                        fontFamily: "Arial, sans-serif",
+                        color: "#4a5568",
+                      }}
+                    >
+                      ENDDATE
+                    </Typography>
+                  </TableCell>
+                  <TableCell style={{ backgroundColor: "transparent" }}>
+                    <Typography
+                      variant="subtitle1"
+                      style={{
+                        fontSize: "12px",
+                        fontWeight: "bold",
+                        fontFamily: "Arial, sans-serif",
+                        color: "#4a5568",
+                      }}
+                    >
+                      LIMIT
+                    </Typography>
+                  </TableCell>
+                  <TableCell style={{ backgroundColor: "transparent" }}>
+                    <Typography
+                      variant="subtitle1"
+                      style={{
+                        fontSize: "12px",
+                        fontWeight: "bold",
+                        fontFamily: "Arial, sans-serif",
+                        color: "#4a5568",
+                      }}
+                    >
+                      TRIPJOIN
+                    </Typography>
+                  </TableCell>
+                  <TableCell style={{ backgroundColor: "transparent" }}>
+                    <Typography
+                      variant="subtitle1"
+                      style={{
+                        fontSize: "12px",
+                        fontWeight: "bold",
+                        fontFamily: "Arial, sans-serif",
+                        color: "#4a5568",
+                      }}
+                    >
+                      STATUS
+                    </Typography>
+                  </TableCell>
+                  <TableCell style={{ backgroundColor: "transparent" }}>
+                    <Typography
+                      variant="subtitle1"
+                      style={{
+                        fontSize: "12px",
+                        fontWeight: "bold",
+                        fontFamily: "Arial, sans-serif",
+                        color: "#4a5568",
+                      }}
+                    >
+                      TRIPPROFILE
+                    </Typography>
+                  </TableCell>
+                  <TableCell style={{ backgroundColor: "transparent" }}>
+                    <Typography
+                      variant="subtitle1"
+                      style={{
+                        fontSize: "12px",
+                        fontWeight: "bold",
+                        fontFamily: "Arial, sans-serif",
+                        color: "#4a5568",
+                      }}
+                    >
+                      ACTION
+                    </Typography>
+                  </TableCell>
+                </TableHead>
+                <TableBody>
+                  {tripData.map((user, index) => (
+                    <TableRow key={index}>
+                      <TableCell>{user.uid || "N/A"}</TableCell>
+                      <TableCell>{user.tripCreate || "N/A"}</TableCell>
+                      <TableCell>{user.tripName || "N/A"}</TableCell>
+                      <TableCell>
+                        {user.tripStartDate
+                          ? user.tripStartDate.toDate().toLocaleString()
+                          : "N/A"}
+                      </TableCell>
+                      <TableCell>
+                        {user.tripEndDate
+                          ? user.tripEndDate.toDate().toLocaleString()
+                          : "N/A"}
+                      </TableCell>
+                      <TableCell>{user.tripLimit || "N/A"}</TableCell>
+                      <TableCell>{user.tripJoin.length || "N/A"}</TableCell>
+                      <TableCell>{user.tripStatus || "N/A"}</TableCell>
+                      <TableCell>
+                        {user.tripProfileUrl ? (
+                          <img
+                            src={user.tripProfileUrl}
+                            alt="Profile"
+                            style={{
+                              width: 50,
+                              height: 50,
+                              borderRadius: "50%",
+                            }}
+                          />
+                        ) : (
+                          "N/A"
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        <Link to={`/edittrip/${user.uid}`}>
+                          <IconButton>
+                            <CreateIcon />
+                          </IconButton>
+                        </Link>
+                        <IconButton onClick={() => handleDeleteUser(user.uid)}>
+                          <DeleteIcon />
+                        </IconButton>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </Box>
+          </CardContent>
+        </Card>
+      </Box>
     </div>
   );
 }

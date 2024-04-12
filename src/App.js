@@ -10,12 +10,14 @@ import EditTrip from './trips/edittrip';
 import ShowPlace from './places/showplace'; 
 import EditPlace from './places/editplace'; 
 import Login from './authen/login'; 
+import './App.css'; // Corrected CSS import path
 
 function App() {
   return (
     <Router>
-      <div>
+      <div style={{ backgroundColor: '#f2f2f2' }}>
         <Routes>
+        <Route path="/" element={<Login />} /> {/* Login page */}
         <Route path="/login" element={<Login />} /> {/* Login page */}
           <Route path="/users" element={<ShowUser />} />
           <Route path="/edituser/:userId" element={<EditUser />} />

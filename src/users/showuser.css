@@ -1,32 +1,13 @@
-/* TablePage.css */
-table {
-    width: 100%;
-    border-collapse: collapse;
-    border: 2px solid #ddd; /* เพิ่มเส้นขอบ */
-  }
+*{
+  box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
   
-  th, td {
-    padding: 12px; /* เพิ่มพื้นที่และระยะห่าง */
-    text-align: left;
-    border-bottom: 1px solid #ddd;
-  }
-  
-  th {
-    background-color: #f2f2f2;
-  }
-  
-  tr:hover {
-    background-color: #f5f5f5;
-  }
-  
-  img {
-    max-width: 50px;
-    max-height: 50px;
-    margin: 4px; /* เพิ่มขอบระหว่างรูปภาพ */
-  }
-  .action-icon {
-    width: 20px;
-    height: 20px;
-    margin-right: 5px;
-    cursor: pointer;
-  }
+}
+body{
+  font-family: Helvetica;
+  -webkit-font-smoothing: antialiased;
+  background: rgb(255, 255, 255);
+  margin: 0;
+  padding: 0;
+}

@@ -7,7 +7,6 @@ import FlightIcon from '@material-ui/icons/Flight';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
 
-
 const useStyles = makeStyles((theme) => ({
   sidebar: {
     width: '100',
@@ -19,32 +18,11 @@ const useStyles = makeStyles((theme) => ({
     top: 0,
     left: 0,
     height: '100vh', // ทำให้ sidebar เต็มความสูงของหน้าจอ
-  },
-  linkText: {
-    textDecoration: 'none',
-    color: theme.palette.text.primary,
-    display: 'block',
-    padding: theme.spacing(2),
-    transition: 'background-color 0.3s ease',
-    fontWeight: 500,
-    fontSize: theme.typography.body1.fontSize,
-    fontFamily: 'Roboto, sans-serif',
-  },
-  listItemText: {
-    fontWeight: 400,
-    fontFamily: 'Roboto, sans-serif',
-    fontSize: theme.typography.body1.fontSize,
-  },
-  listItem: {
-    borderBottom: `1px solid ${theme.palette.divider}`,
-    borderRadius: theme.shape.borderRadius,
-    '&:last-child': {
-      borderBottom: 'none',
-    },
-  },
+  }
+ 
 }));
 
-function Navbar() {
+function Sidebar() {
   const classes = useStyles();
   const navigate = useNavigate();
 
@@ -55,25 +33,10 @@ function Navbar() {
   };
 
   return (
-    <div>
-      <AppBar style={{margin : '0px 25px 0px 25px' , backgroundColor: '#fcfafa'}} position="static">
-        <Toolbar style={{ display: 'flex', justifyContent: 'space-between' }}>
-          <div>
-          </div>
-          <div>
-          <IconButton color="inherit" onClick={handleLogout} style={{ color: '#757575' }}>
-  <ExitToAppIcon />
-</IconButton>
 
-          </div>
-        </Toolbar>
-      </AppBar>
       <div className={classes.sidebar}> 
           <List>
-          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%', marginTop: '15px' }}>
-  <img src={process.env.PUBLIC_URL + '/logo.png'} alt="Logo" style={{ maxWidth: '120px' }} />
-</div>
-            <Link to="/users" className={classes.linkText}> 
+            <Link to="/users" className={classes.linkText}>
               <ListItem button key="ข้อมูลผู้ใช้">
                 <ListItemIcon><PersonIcon /></ListItemIcon>
                 <ListItemText primary="ข้อมูลผู้ใช้" />
@@ -93,8 +56,8 @@ function Navbar() {
             </Link>
           </List>
         </div>
-    </div>
+ 
   );
 }
 
-export default Navbar;
+export default Sidebar;
