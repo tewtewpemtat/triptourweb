@@ -1,11 +1,18 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { firestore } from "../firebase";
 import { ref, uploadBytes } from "firebase/storage";
 import Navbar from "../navbar";
-import { storage } from "../firebase"; // import Firebase storage instance
 import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+import {
+  collection,
+  addDoc,
+  setDoc,
+  getDocs,
+  query,
+  where,
+} from "firebase/firestore";
 import {
   Card,
   CardContent,
@@ -22,7 +29,7 @@ import {
   FormControl,
   MenuItem,
   IconButton, // Import IconButton component
-  InputAdornment // Import InputAdornment component
+  InputAdornment, // Import InputAdornment component
 } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material"; // Import Visibility and VisibilityOff icons
 
@@ -32,11 +39,20 @@ function Add() {
   const [password, setPassword] = useState("");
   const [emailError, setEmailError] = useState(false);
   const [passwordError, setPasswordError] = useState(false);
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+  const navigate = useNavigate();
   const handleClickShowPassword = () => {
     setShowPassword(!showPassword);
   };
 
+  useEffect(() => {
+    const authToken = localStorage.getItem("authToken");
+    if (!authToken) {
+      navigate("/login", { replace: true });
+    }
+  }, [navigate]);
+  
   const handleEmailChange = (e) => {
     setEmail(e.target.value);
     if (!e.target.value) {
@@ -56,6 +72,11 @@ function Add() {
   };
 
   const handleSave = async () => {
+    if (!emailRegex.test(email)) {
+      alert("โปรดกรอกอีเมลให้ถูกต้อง");
+      return;
+    }
+
     if (!email) {
       setEmailError(true);
       return;
@@ -64,19 +85,34 @@ function Add() {
       setPasswordError(true);
       return;
     }
-
-    try {
-      const auth = getAuth();
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      const user = userCredential.user;
-      if (user) {
-        const userData = { email: user.email }; // Additional user data to store in Firestore
-        await firestore.collection("admins").doc(user.uid).set(userData);
-        // Perform any additional actions after user creation
-      }
-    } catch (error) {
-      console.error("Error creating user:", error.message);
+    if (password.length < 6) {
+      alert("รหัสผ่านต้องมากกว่า 6 ตัว");
+      return;
     }
+    try {
+      // ตรวจสอบว่ามีเอกสารใน collection "admins" ที่มี email ซ้ำหรือไม่
+      const querySnapshot = await getDocs(
+        query(collection(firestore, "admins"), where("email", "==", email))
+      );
+      if (!querySnapshot.empty) {
+        alert("มีอีเมลนี้อยู่แล้วในระบบ");
+        return;
+      }
+
+      // สร้างเอกสารใหม่ใน collection "admins" ด้วยข้อมูล email และ password
+      const docRef = await addDoc(collection(firestore, "admins"), {
+        email,
+        password,
+      });
+      alert("เพิ่มข้อมูลเสร็จสิ้น");
+      navigate("/manage");
+    } catch (error) {
+      console.error("Error adding document: ", error);
+    }
+  };
+
+  const handleBack = async () => {
+    navigate("/manage");
   };
 
   return (
@@ -117,6 +153,7 @@ function Add() {
                         id="email"
                         label="Email"
                         variant="outlined"
+                        type="email"
                         fullWidth
                         sx={{ mb: 2 }}
                         value={email}
@@ -146,10 +183,14 @@ function Add() {
                                 onClick={handleClickShowPassword}
                                 edge="end"
                               >
-                                {showPassword ? <VisibilityOff /> : <Visibility />}
+                                {showPassword ? (
+                                  <VisibilityOff />
+                                ) : (
+                                  <Visibility />
+                                )}
                               </IconButton>
                             </InputAdornment>
-                          )
+                          ),
                         }}
                       />
                     </Grid>
@@ -168,12 +209,12 @@ function Add() {
                       color="primary"
                       variant="contained"
                       type="button"
-                      style={{marginLeft: '8px'}}
+                      style={{ marginLeft: "8px" }}
+                      onClick={handleBack}
                     >
                       ยกเลิก
                     </Button>
                   </Box>
-                  
                 </form>
               </CardContent>
             </Card>

@@ -5,7 +5,7 @@ import { auth, firestore, getDoc, doc } from "../firebase"; // นำเข้�
 import { useNavigate, Navigate } from "react-router-dom";
 import { onAuthStateChanged } from "firebase/auth";
 import "./login.css"; // Corrected CSS import path
-
+import { collection, query, where, getDocs } from "firebase/firestore";
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -13,34 +13,35 @@ function Login() {
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    e.preventDefault();
     try {
-      const userCredential = await signInWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
-      const user = userCredential.user;
+      // Query the admins collection to check if the email exists
+      const adminsRef = collection(firestore, "admins");
+      const q = query(adminsRef, where("email", "==", email));
+      const querySnapshot = await getDocs(q);
 
-      // ตรวจสอบว่า uid ของผู้ใช้ที่ล็อกอินเข้าสู่ระบบมีใน collection admins หรือไม่
-      const adminSnapshot = await getDoc(doc(firestore, "admins", user.uid));
-      if (adminSnapshot.exists()) {
-        localStorage.setItem("authToken", user.uid);
-        localStorage.setItem("email", user.email);
-        navigate("/users");
-        alert("เข้าสู่ระบบสำเร็จ");
+      if (!querySnapshot.empty) {
+        // User with the provided email exists, now check the password
+        querySnapshot.forEach((doc) => {
+          const adminData = doc.data();
+          if (adminData.password === password) {
+            // Authentication successful
+            localStorage.setItem("authToken", email); // Using email as auth token
+            localStorage.setItem("email", email);
+            navigate("/users");
+            alert("เข้าสู่ระบบสำเร็จ");
+          } else {
+            // Incorrect password
+            alert("รหัสผ่านไม่ถูกต้อง");
+          }
+        });
       } else {
-        console.log("User is not an admin");
-        // ออกจากระบบ
-        await auth.signOut();
-        // แสดง alert ว่าอีเมลหรือรหัสผ่านไม่ถูกต้อง
-        alert("อีเมลหรือรหัสผ่านไม่ถูกต้อง");
+        // User not found in admins collection
+        alert("อีเมลไม่ถูกต้อง");
       }
-
-      console.log("User logged in:", user);
     } catch (error) {
-      console.error("Error signing in:", error.message);
-      // แสดง alert ว่าอีเมลหรือรหัสผ่านไม่ถูกต้อง
-      alert("อีเมลหรือรหัสผ่านไม่ถูกต้อง");
+      console.error("Error logging in:", error.message);
+      alert("เกิดข้อผิดพลาดขณะเข้าสู่ระบบ");
     }
   };
   useEffect(() => {
@@ -68,26 +69,26 @@ function Login() {
           style={{ maxWidth: "120px" }}
         />
       </div>
- 
+
       <form className="formLogin" onSubmit={handleLogin}>
-      <div className="login"> 
-        <label>Email:</label>
-        <input
-          type="email"
-          name="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
-        <br />
-        <label>Password:</label>
-        <input
-          type="password"
-          name="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
+        <div className="login">
+          <label>Email:</label>
+          <input
+            type="email"
+            name="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
+          <br />
+          <label>Password:</label>
+          <input
+            type="password"
+            name="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
         </div>
         <br />
         <br />
