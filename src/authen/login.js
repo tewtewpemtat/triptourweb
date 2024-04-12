@@ -68,7 +68,9 @@ function Login() {
           style={{ maxWidth: "120px" }}
         />
       </div>
+ 
       <form className="formLogin" onSubmit={handleLogin}>
+      <div className="login"> 
         <label>Email:</label>
         <input
           type="email"
@@ -86,6 +88,7 @@ function Login() {
           onChange={(e) => setPassword(e.target.value)}
           required
         />
+        </div>
         <br />
         <br />
         <button type="submit" className="loginbutton">

@@ -240,12 +240,20 @@ function ShowTrip() {
                       <TableCell>{user.tripName || "N/A"}</TableCell>
                       <TableCell>
                         {user.tripStartDate
-                          ? user.tripStartDate.toDate().toLocaleString()
+                          ? `${user.tripStartDate
+                              .toDate()
+                              .toLocaleDateString("th-TH")} ${user.tripStartDate
+                              .toDate()
+                              .toLocaleTimeString("th-TH")}`
                           : "N/A"}
                       </TableCell>
                       <TableCell>
                         {user.tripEndDate
-                          ? user.tripEndDate.toDate().toLocaleString()
+                          ? `${user.tripEndDate
+                              .toDate()
+                              .toLocaleDateString("th-TH")} ${user.tripEndDate
+                              .toDate()
+                              .toLocaleTimeString("th-TH")}`
                           : "N/A"}
                       </TableCell>
                       <TableCell>{user.tripLimit || "N/A"}</TableCell>

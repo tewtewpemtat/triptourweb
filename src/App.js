@@ -9,6 +9,8 @@ import ShowTrip from './trips/showtrip';
 import EditTrip from './trips/edittrip'; 
 import ShowPlace from './places/showplace'; 
 import EditPlace from './places/editplace'; 
+import Manage from './manage/manage'; 
+import Add from './manage/add'; 
 import Login from './authen/login'; 
 import './App.css'; // Corrected CSS import path
 
@@ -25,6 +27,8 @@ function App() {
           <Route path="/editplace/:userId" element={<EditPlace />} />
           <Route path="/trips" element={<ShowTrip />} />
           <Route path="/places" element={<ShowPlace />} />
+          <Route path="/manage" element={<Manage />} />
+          <Route path="/manage/add" element={<Add />} />
         </Routes>
       </div>
     </Router>

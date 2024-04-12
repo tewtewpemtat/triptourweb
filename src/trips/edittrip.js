@@ -248,7 +248,7 @@ function EditTrip() {
                         timeFormat="HH:mm"
                         timeIntervals={15}
                         timeCaption="Time"
-                        dateFormat="yyyy/MM/dd HH:mm"
+                        dateFormat="dd/MM/yyyy HH:mm"
                         className="input"
                         customInput={
                           <TextField
@@ -276,7 +276,7 @@ function EditTrip() {
                         timeFormat="HH:mm"
                         timeIntervals={15}
                         timeCaption="Time"
-                        dateFormat="yyyy/MM/dd HH:mm"
+                        dateFormat="dd/MM/yyyy HH:mm"
                         className="input"
                         customInput={
                           <TextField

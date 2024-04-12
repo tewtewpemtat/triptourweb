@@ -24,8 +24,8 @@ body {
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
   }
   
-  input[type="email"],
-  input[type="password"]
+  .login input[type="email"],
+  .login input[type="password"]
    {
     display: block;
     width: 100%;
