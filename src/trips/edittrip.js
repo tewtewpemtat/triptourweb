@@ -10,6 +10,7 @@ import { ref, uploadBytes } from "firebase/storage";
 import Navbar from "../navbar";
 import { storage } from "../firebase"; // import Firebase storage instance
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
+import PhotoIcon from '@mui/icons-material/Photo';
 import {
   Card,
   InputLabel,
@@ -398,15 +399,33 @@ function EditTrip() {
                     </Grid>
                   </FormControl>
                   <TextField
-                    id="tripProfileUrl"
-                    label="trip Image URL"
-                    variant="outlined"
+                    id="upload-file"
                     type="file"
-                    fullWidth
-                    sx={{ mb: 2 }}
+                    inputProps={{ accept: ".jpg, .jpeg, .png" }}
                     onChange={handleImageChange}
-                    InputLabelProps={{ shrink: true }}
+                    style={{ display: "none" }} // Hide the input field
                   />
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                
+                      marginBottom: "20px",
+                    }}
+                  >
+                    <InputLabel htmlFor="upload-file" sx={{ cursor: "pointer" }}>
+                      <Button
+                        variant="contained"
+                        component="span"
+                        startIcon={<PhotoIcon />}
+                      >
+                        เปลี่ยนรูปทริป 
+                      </Button>
+                    </InputLabel>
+                    <Typography variant="body1" sx={{ marginLeft: "10px" }}>
+                      {profileImage ? profileImage.name : "ไม่ได้เลือกไฟล์"}
+                    </Typography>
+                  </Box>
                   <Box textAlign="right">
                     <Button
                       color="primary"

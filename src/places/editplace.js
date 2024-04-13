@@ -9,6 +9,8 @@ import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { storage } from "../firebase"; // import Firebase storage instance
 import Navbar from "../navbar";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
+import PhotoIcon from '@mui/icons-material/Photo';
+
 import {
   Card,
   InputLabel,
@@ -39,6 +41,8 @@ function EditPlace() {
   const [placetimeend, setplacetimeend] = useState(new Date()); // State for trip end date
   const [placestart, setPlaceStart] = useState({ latitude: 0, longitude: 0 });
   const navigate = useNavigate();
+  const [selectedFile, setSelectedFile] = useState(null); // State to store the selected file
+
 
   useEffect(() => {
     const authToken = localStorage.getItem("authToken");
@@ -106,13 +110,13 @@ function EditPlace() {
 
   const handleUpdateUser = async () => {
     try {
-      if (profileImage) {
-        const profileImageUrl = await uploadProfileImageToStorage(profileImage);
+      if (selectedFile) {
+        const profileLink = await uploadProfileImageToStorage(selectedFile,userId);
         setUserData((prevData) => ({
           ...prevData,
-          placepicUrl: profileImageUrl,
+          placepicUrl: profileLink,
         }));
-        console.log(profileImageUrl);
+        console.log(profileLink);
       }
       const userDoc = doc(firestore, "places", userId);
       await updateDoc(userDoc, userData);
@@ -130,10 +134,10 @@ function EditPlace() {
     return randomNumber.toString();
   }
 
-  const uploadProfileImageToStorage = async (imageFile) => {
+  const uploadProfileImageToStorage = async (imageFile,userId) => {
     try {
       const randomImg = generateRandomNumber();
-      const filePath = `trip/places/profilepicedit/${placeId}/${userData.placename}${randomImg}.jpg`;
+      const filePath = `trip/places/profilepicedit/${placeId}/${userId}${randomImg}.jpg`;
       const storageRef = ref(storage, filePath);
       await uploadBytes(storageRef, imageFile);
       console.log("Image uploaded successfully!");
@@ -158,9 +162,8 @@ function EditPlace() {
   };
 
   const handleImageChange = (e) => {
-    const imageFile = e.target.files[0];
-    console.log("Selected image:", imageFile);
-    setProfileImage(imageFile);
+    const file = e.target.files[0];
+    setSelectedFile(file);
   };
 
   const handlePlaceChange3 = (e) => {
@@ -523,15 +526,33 @@ function EditPlace() {
                     </Grid>
                   </Grid>
                   <TextField
-                    id="placepicUrl"
-                    label="place Image URL"
-                    variant="outlined"
+                    id="upload-file"
                     type="file"
-                    fullWidth
-                    sx={{ mb: 2 }}
+                    inputProps={{ accept: ".jpg, .jpeg, .png" }}
                     onChange={handleImageChange}
-                    InputLabelProps={{ shrink: true }}
+                    style={{ display: "none" }} // Hide the input field
                   />
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                
+                      marginBottom: "20px",
+                    }}
+                  >
+                    <InputLabel htmlFor="upload-file" sx={{ cursor: "pointer" }}>
+                      <Button
+                        variant="contained"
+                        component="span"
+                        startIcon={<PhotoIcon />}
+                      >
+                        เปลี่ยนรูปสถานที่  
+                      </Button>
+                    </InputLabel>
+                    <Typography variant="body1" sx={{ marginLeft: "10px" }}>
+                      {selectedFile ? selectedFile.name : "ไม่ได้เลือกไฟล์"}
+                    </Typography>
+                  </Box>
                   <Box textAlign="right">
                     <Button
                       color="primary"
