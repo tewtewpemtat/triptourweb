@@ -195,6 +195,7 @@ function ShowUser() {
                         fontWeight: "bold",
                         fontFamily: "Arial, sans-serif",
                         color: "#4a5568",
+                        paddingLeft: "20px",
                       }}
                     >
                       ACTION

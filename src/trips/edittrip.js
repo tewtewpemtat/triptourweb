@@ -9,6 +9,7 @@ import "./edittrip.css"; // Import CSS file for styling
 import { ref, uploadBytes } from "firebase/storage";
 import Navbar from "../navbar";
 import { storage } from "../firebase"; // import Firebase storage instance
+import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import {
   Card,
   InputLabel,
@@ -85,13 +86,12 @@ function EditTrip() {
       const userDoc = doc(firestore, "trips", userId);
       await updateDoc(userDoc, userData);
       alert("แก้ไขข้อมูลสำเร็จ");
-      navigate('/trips');
       console.log("User updated successfully!");
     } catch (error) {
       console.error("Error updating user: ", error);
     }
   };
-  
+
   const uploadProfileImageToStorage = async (imageFile, userId) => {
     try {
       const storageRef = ref(storage, `trip/profiletrip/${userId}.jpg`);
@@ -187,9 +187,11 @@ function EditTrip() {
                   padding: "15px 30px",
                   display: "flex",
                   alignItems: "center",
-                  justifyContent: "space-between",
                 }}
               >
+                <Link to={`/trips`}>
+                  <ArrowBackIosIcon style={{ color: "#4a5568" }} />
+                </Link>
                 <Typography
                   variant="h5"
                   style={{
@@ -201,12 +203,8 @@ function EditTrip() {
                 >
                   เเก้ไขข้อมูล
                 </Typography>
-                <Link to={`/place/${userId}`}>
-                  <Button
-                    color="primary"
-                    variant="contained"
-                    type="button"
-                  >
+                <Link to={`/place/${userId}`} style={{ marginLeft: "auto" }}>
+                  <Button color="primary" variant="contained" type="button">
                     ข้อมูลสถานที่
                   </Button>
                 </Link>
@@ -350,10 +348,9 @@ function EditTrip() {
                                     style={{
                                       marginTop: "5px",
                                       marginBottom: "5px",
-                                      backgroundColor: "red"
+                                      backgroundColor: "red",
                                     }}
                                     variant="contained"
-
                                     onClick={() => handleRemoveTripJoin(index)}
                                   >
                                     ลบ

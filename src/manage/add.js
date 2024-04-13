@@ -52,7 +52,7 @@ function Add() {
       navigate("/login", { replace: true });
     }
   }, [navigate]);
-  
+
   const handleEmailChange = (e) => {
     setEmail(e.target.value);
     if (!e.target.value) {

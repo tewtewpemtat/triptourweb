@@ -1,6 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { firestore } from "../firebase";
-import { collection, getDocs, doc, deleteDoc ,getDoc } from "firebase/firestore";
+import {
+  collection,
+  getDocs,
+  doc,
+  deleteDoc,
+  getDoc,
+} from "firebase/firestore";
 import { getAuth, deleteUser } from "firebase/auth";
 import {
   Typography,
@@ -87,15 +93,15 @@ function Manage() {
     if (confirmed) {
       try {
         const currentEmail = localStorage.getItem("email");
-    
+
         const adminDocRef = doc(firestore, "admins", uid);
         const adminDocSnapshot = await getDoc(adminDocRef);
         if (adminDocSnapshot.exists()) {
           const adminData = adminDocSnapshot.data();
           if (currentEmail === adminData.email) {
             await deleteDoc(adminDocRef);
-            localStorage.removeItem('authToken');
-            localStorage.removeItem('email');
+            localStorage.removeItem("authToken");
+            localStorage.removeItem("email");
             alert("ลบข้อมูลสำเร็จ");
             navigate("/login");
           } else {

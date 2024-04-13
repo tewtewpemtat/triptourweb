@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { useParams,useNavigate } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { ListItemIcon } from "@material-ui/core";
 import { firestore } from "../firebase";
 import "./edituser.css"; // Import CSS file for styling
-import { ref, uploadBytes } from "firebase/storage";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import Navbar from "../navbar";
 import { storage } from "../firebase"; // import Firebase storage instance
+import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import {
   Card,
   CardContent,
@@ -69,7 +71,6 @@ function EditUser() {
       await updateDoc(userDoc, userData);
       console.log("User updated successfully!");
       alert("แก้ไขข้อมูลสำเร็จ");
-      navigate('/users');
     } catch (error) {
       console.error("Error updating user: ", error);
     }
@@ -86,26 +87,25 @@ function EditUser() {
     const imageFile = e.target.files[0];
     setProfileImage(imageFile);
   };
+
   const uploadProfileImageToStorage = async (imageFile, userId) => {
     try {
-      const storageRef = ref(storage, `profilepic/${userId}/profile.jpg`);
+      const filePath = `profilepic/${userId}/profile.jpg`;
+      const storageRef = ref(storage, filePath);
       await uploadBytes(storageRef, imageFile);
       console.log("Image uploaded successfully!");
-      // สร้าง URL ของรูปภาพที่อัปโหลด
-      const profileImageUrl = `https://firebasestorage.googleapis.com/v0/b/${
-        storage.app.options.storageBucket
-      }/o/${encodeURIComponent(
-        "trip/profiletrip/" + userId + ".jpg"
-      )}?alt=media`;
 
-      console.log("Profile image URL:", profileImageUrl);
+      // Generate the download URL
+      const downloadURL = await getDownloadURL(storageRef);
 
-      return profileImageUrl; // ส่งกลับ URL ของรูปภาพ
+      console.log("Profile image URL:", downloadURL);
+      return downloadURL; // Return the download URL of the image
     } catch (error) {
       console.error("Error uploading image:", error);
-      return null; // หากเกิดข้อผิดพลาดในการอัปโหลด ส่งค่า null กลับไป
+      return null; // Return null in case of error
     }
   };
+
   const handleSubmit = () => {
     handleUpdateUser();
   };
@@ -132,19 +132,20 @@ function EditUser() {
                   alignItems: "center",
                 }}
               >
-                <Box flexGrow={1}>
-                  <Typography
-                    variant="h5"
-                    style={{
-                      fontSize: "18px",
-                      fontWeight: "bold",
-                      fontFamily: "Arial, sans-serif",
-                      color: "#4a5568",
-                    }}
-                  >
-                    เเก้ไขข้อมูล
-                  </Typography>
-                </Box>
+                <Link to={`/users`}>
+                  <ArrowBackIosIcon style={{ color: "#4a5568" }} />
+                </Link>
+                <Typography
+                  variant="h5"
+                  style={{
+                    fontSize: "18px",
+                    fontWeight: "bold",
+                    fontFamily: "Arial, sans-serif",
+                    color: "#4a5568",
+                  }}
+                >
+                  เเก้ไขข้อมูล
+                </Typography>
               </Box>
               <Divider />
               <CardContent sx={{ padding: "30px" }}>
@@ -217,17 +218,17 @@ function EditUser() {
                           <FormControlLabel
                             value="ชาย"
                             control={<Radio />}
-                            label="Male"
+                            label="ชาย"
                           />
                           <FormControlLabel
                             value="หญิง"
                             control={<Radio />}
-                            label="Female"
+                            label="หญิง"
                           />
                           <FormControlLabel
                             value="เพศทางเลือก"
                             control={<Radio />}
-                            label="Other"
+                            label="อื่นๆ"
                           />
                         </RadioGroup>
                       </Grid>

@@ -218,7 +218,7 @@ function ShowTrip() {
                       TRIPPROFILE
                     </Typography>
                   </TableCell>
-                  <TableCell style={{ backgroundColor: "transparent" }}>
+                  <TableCell style={{ backgroundColor: "transparent"}}>
                     <Typography
                       variant="subtitle1"
                       style={{
@@ -226,9 +226,11 @@ function ShowTrip() {
                         fontWeight: "bold",
                         fontFamily: "Arial, sans-serif",
                         color: "#4a5568",
+                        width: "90px",
+                        paddingLeft: "20px"
                       }}
                     >
-                      ACTION
+                     ACTION
                     </Typography>
                   </TableCell>
                 </TableHead>

@@ -5,9 +5,10 @@ import { firestore } from "../firebase";
 import DatePicker from "react-datepicker"; // Import DatePicker
 import "react-datepicker/dist/react-datepicker.css"; // Import DatePicker CSS
 import "./editplace.css"; // Import CSS file for styling
-import { ref, uploadBytes ,getDownloadURL} from "firebase/storage";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { storage } from "../firebase"; // import Firebase storage instance
 import Navbar from "../navbar";
+import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import {
   Card,
   InputLabel,
@@ -38,11 +39,11 @@ function EditPlace() {
   const [placetimeend, setplacetimeend] = useState(new Date()); // State for trip end date
   const [placestart, setPlaceStart] = useState({ latitude: 0, longitude: 0 });
   const navigate = useNavigate();
-  
+
   useEffect(() => {
-    const authToken = localStorage.getItem('authToken');
+    const authToken = localStorage.getItem("authToken");
     if (!authToken) {
-      navigate('/login', { replace: true });
+      navigate("/login", { replace: true });
     }
   }, [navigate]);
 
@@ -92,24 +93,21 @@ function EditPlace() {
       ...prevData,
       [name]: value,
     }));
-    
+
     // Update userData with the new placestart value
     setUserData((prevUserData) => ({
       ...prevUserData,
       placestart: {
         ...prevUserData.placestart,
         [name]: value,
-      }
+      },
     }));
   };
-  
+
   const handleUpdateUser = async () => {
     try {
       if (profileImage) {
-        const profileImageUrl = await uploadProfileImageToStorage(
-          profileImage,
-          userId
-        );
+        const profileImageUrl = await uploadProfileImageToStorage(profileImage);
         setUserData((prevData) => ({
           ...prevData,
           placepicUrl: profileImageUrl,
@@ -119,7 +117,6 @@ function EditPlace() {
       const userDoc = doc(firestore, "places", userId);
       await updateDoc(userDoc, userData);
       alert("แก้ไขข้อมูลสำเร็จ");
-      navigate(`/place/${placeId}`);
       console.log("User updated successfully!");
     } catch (error) {
       console.error("Error updating user: ", error);
@@ -133,25 +130,24 @@ function EditPlace() {
     return randomNumber.toString();
   }
 
-  const uploadProfileImageToStorage = async (imageFile, userId) => {
+  const uploadProfileImageToStorage = async (imageFile) => {
     try {
-        const randomImg = generateRandomNumber();
-        const filePath = `trip/places/profilepicedit/${placeId}/${userData.placename}${randomImg}.jpg`;
-        const storageRef = ref(storage, filePath);
-        await uploadBytes(storageRef, imageFile);
-        console.log("Image uploaded successfully!");
-        
-        // Generate the download URL
-        const downloadURL = await getDownloadURL(storageRef);
+      const randomImg = generateRandomNumber();
+      const filePath = `trip/places/profilepicedit/${placeId}/${userData.placename}${randomImg}.jpg`;
+      const storageRef = ref(storage, filePath);
+      await uploadBytes(storageRef, imageFile);
+      console.log("Image uploaded successfully!");
 
-        console.log("Profile image URL:", downloadURL);
-        return downloadURL; // Return the download URL of the image
+      // Generate the download URL
+      const downloadURL = await getDownloadURL(storageRef);
+
+      console.log("Profile image URL:", downloadURL);
+      return downloadURL; // Return the download URL of the image
     } catch (error) {
-        console.error("Error uploading image:", error);
-        return null; // Return null in case of error
+      console.error("Error uploading image:", error);
+      return null; // Return null in case of error
     }
-};
-
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -205,20 +201,24 @@ function EditPlace() {
                   alignItems: "center",
                 }}
               >
-                <Box flexGrow={1}>
-                  <Typography
-                    variant="h5"
-                    style={{
-                      fontSize: "18px",
-                      fontWeight: "bold",
-                      fontFamily: "Arial, sans-serif",
-                      color: "#4a5568",
-                    }}
-                  >
-                    เเก้ไขข้อมูล
-                  </Typography>
-                </Box>
+                <Link to={`/place/${placeId}`}>
+                  <ArrowBackIosIcon style={{ color: "#4a5568" }} />
+                </Link>
+
+                <Typography
+                  variant="h5"
+                  style={{
+                    fontSize: "18px",
+                    fontWeight: "bold",
+                    fontFamily: "Arial, sans-serif",
+                    color: "#4a5568",
+                    marginLeft: "5px", // เพิ่มการเยื้องเพื่อให้ข้อความอยู่ในบรรทัดเดียวกับไอคอน
+                  }}
+                >
+                  แก้ไขข้อมูล
+                </Typography>
               </Box>
+
               <Divider />
               <CardContent sx={{ padding: "30px" }}>
                 <form>
@@ -290,22 +290,25 @@ function EditPlace() {
                   </Grid>
                   <Grid style={{ marginBottom: "25px" }} container spacing={2}>
                     <Grid item lg={6}>
-                  <TextField
-                    label="startLatitude"
-                    name="latitude"
-                    value={placestart.latitude || ""}
-                    onChange={handlePlaceStartChange}
-                    variant="outlined"
-                    className="input"
-                  /> </Grid> <Grid item lg={6}>
-                  <TextField
-                    label="startLongitude"
-                    name="longitude"
-                    value={placestart.longitude || ""}
-                    onChange={handlePlaceStartChange}
-                    variant="outlined"
-                    className="input"
-                  /> </Grid>
+                      <TextField
+                        label="startLatitude"
+                        name="latitude"
+                        value={placestart.latitude || ""}
+                        onChange={handlePlaceStartChange}
+                        variant="outlined"
+                        className="input"
+                      />{" "}
+                    </Grid>{" "}
+                    <Grid item lg={6}>
+                      <TextField
+                        label="startLongitude"
+                        name="longitude"
+                        value={placestart.longitude || ""}
+                        onChange={handlePlaceStartChange}
+                        variant="outlined"
+                        className="input"
+                      />{" "}
+                    </Grid>
                   </Grid>
                   <Grid style={{ marginBottom: "20px" }} container spacing={2}>
                     <Grid item lg={4}>
@@ -443,85 +446,80 @@ function EditPlace() {
 
                   <Grid style={{ marginBottom: "25px" }} container spacing={2}>
                     <Grid item xs={4}>
-                        <FormControl fullWidth>
-                          <InputLabel
-                            htmlFor="placeadd"
-                            sx={{
-                              marginLeft: "5px",
-                              background: "white",
-                              paddingLeft: "5px",
-                            }}
-                          >
-                            placeAdd
-                          </InputLabel>
-                          <Select
-                            id="placeadd"
-                            name="placeadd"
-                            value={placeadd}
-                            onChange={handlePlaceChange2}
-                            variant="outlined"
-                            className="input"
-                          >
-                            <MenuItem value="Yes">Yes</MenuItem>
-                            <MenuItem value="No">No</MenuItem>
-                          </Select>
-                        </FormControl>
-              
+                      <FormControl fullWidth>
+                        <InputLabel
+                          htmlFor="placeadd"
+                          sx={{
+                            marginLeft: "5px",
+                            background: "white",
+                            paddingLeft: "5px",
+                          }}
+                        >
+                          placeAdd
+                        </InputLabel>
+                        <Select
+                          id="placeadd"
+                          name="placeadd"
+                          value={placeadd}
+                          onChange={handlePlaceChange2}
+                          variant="outlined"
+                          className="input"
+                        >
+                          <MenuItem value="Yes">Yes</MenuItem>
+                          <MenuItem value="No">No</MenuItem>
+                        </Select>
+                      </FormControl>
                     </Grid>
                     <Grid item xs={4}>
-          
-                        <FormControl fullWidth>
-                          <InputLabel
-                            htmlFor="placerun"
-                            sx={{
-                              marginLeft: "5px",
-                              background: "white",
-                              paddingLeft: "5px",
-                            }}
-                          >
-                            placeRun
-                          </InputLabel>
-                          <Select
-                            id="placerun"
-                            name="placerun"
-                            value={placerun}
-                            onChange={handlePlaceChange}
-                            variant="outlined"
-                            className="input"
-                          >
-                            <MenuItem value="Start">Start</MenuItem>
-                            <MenuItem value="Running">Running</MenuItem>
-                            <MenuItem value="End">End</MenuItem>
-                          </Select>
-                        </FormControl>
-                
+                      <FormControl fullWidth>
+                        <InputLabel
+                          htmlFor="placerun"
+                          sx={{
+                            marginLeft: "5px",
+                            background: "white",
+                            paddingLeft: "5px",
+                          }}
+                        >
+                          placeRun
+                        </InputLabel>
+                        <Select
+                          id="placerun"
+                          name="placerun"
+                          value={placerun}
+                          onChange={handlePlaceChange}
+                          variant="outlined"
+                          className="input"
+                        >
+                          <MenuItem value="Start">Start</MenuItem>
+                          <MenuItem value="Running">Running</MenuItem>
+                          <MenuItem value="End">End</MenuItem>
+                        </Select>
+                      </FormControl>
                     </Grid>
                     <Grid item xs={4}>
-                
-                        <FormControl fullWidth>
-                          <InputLabel
-                            htmlFor="placestatus"
-                            sx={{
-                              marginLeft: "5px",
-                              background: "white",
-                              paddingLeft: "5px",
-                            }}
-                          >
-                            placeStatus
-                          </InputLabel>
-                          <Select
-                            id="placestatus"
-                            name="placestatus"
-                            value={placestatus}
-                            onChange={handlePlaceChange3}
-                            variant="outlined"
-                            className="input"
-                          >
-                            <MenuItem value="Added">Added</MenuItem>
-                            <MenuItem value="Wait">Wait</MenuItem>
-                          </Select>
-                        </FormControl>
-                
+                      <FormControl fullWidth>
+                        <InputLabel
+                          htmlFor="placestatus"
+                          sx={{
+                            marginLeft: "5px",
+                            background: "white",
+                            paddingLeft: "5px",
+                          }}
+                        >
+                          placeStatus
+                        </InputLabel>
+                        <Select
+                          id="placestatus"
+                          name="placestatus"
+                          value={placestatus}
+                          onChange={handlePlaceChange3}
+                          variant="outlined"
+                          className="input"
+                        >
+                          <MenuItem value="Added">Added</MenuItem>
+                          <MenuItem value="Wait">Wait</MenuItem>
+                        </Select>
+                      </FormControl>
                     </Grid>
                   </Grid>
                   <TextField
