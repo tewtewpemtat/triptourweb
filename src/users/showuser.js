@@ -79,6 +79,7 @@ function ShowUser() {
         await deleteDoc(doc(firestore, "users", uid));
         const updatedUserData = userData.filter((user) => user.uid !== uid);
         setUserData(updatedUserData);
+        alert("ลบข้อมูลสำเร็จ");
       } catch (error) {
         console.error("Error deleting user: ", error);
       }

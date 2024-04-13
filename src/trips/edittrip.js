@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { firestore } from "../firebase";
+import { Link, useNavigate } from "react-router-dom";
 import DatePicker from "react-datepicker"; // Import DatePicker
 import "react-datepicker/dist/react-datepicker.css"; // Import DatePicker CSS
 import "./edittrip.css"; // Import CSS file for styling
@@ -36,6 +37,7 @@ function EditTrip() {
   const [tripEndDate, setTripEndDate] = useState(new Date()); // State for trip end date
   const [tripJoin, setTripJoin] = useState([]);
   const [tripLimit, setTripLimit] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -71,14 +73,10 @@ function EditTrip() {
   const handleUpdateUser = async () => {
     try {
       if (profileImage) {
-        // อัปโหลดรูปภาพไปยัง Firebase Storage
-
-        // สร้าง URL ของรูปภาพที่อัปโหลด
         const profileImageUrl = await uploadProfileImageToStorage(
           profileImage,
           userId
         );
-        // อัปเดต tripProfileUrl ในข้อมูลผู้ใช้
         setUserData((prevData) => ({
           ...prevData,
           tripProfileUrl: profileImageUrl,
@@ -87,11 +85,13 @@ function EditTrip() {
       const userDoc = doc(firestore, "trips", userId);
       await updateDoc(userDoc, userData);
       alert("แก้ไขข้อมูลสำเร็จ");
+      navigate('/trips');
       console.log("User updated successfully!");
     } catch (error) {
       console.error("Error updating user: ", error);
     }
   };
+  
   const uploadProfileImageToStorage = async (imageFile, userId) => {
     try {
       const storageRef = ref(storage, `trip/profiletrip/${userId}.jpg`);
@@ -140,6 +140,7 @@ function EditTrip() {
       tripJoin: updatedTripJoin,
     }));
   };
+
   const handleChange = (e) => {
     const { id, value } = e.target;
     setUserData((prevData) => ({
@@ -186,21 +187,29 @@ function EditTrip() {
                   padding: "15px 30px",
                   display: "flex",
                   alignItems: "center",
+                  justifyContent: "space-between",
                 }}
               >
-                <Box flexGrow={1}>
-                  <Typography
-                    variant="h5"
-                    style={{
-                      fontSize: "18px",
-                      fontWeight: "bold",
-                      fontFamily: "Arial, sans-serif",
-                      color: "#4a5568",
-                    }}
+                <Typography
+                  variant="h5"
+                  style={{
+                    fontSize: "18px",
+                    fontWeight: "bold",
+                    fontFamily: "Arial, sans-serif",
+                    color: "#4a5568",
+                  }}
+                >
+                  เเก้ไขข้อมูล
+                </Typography>
+                <Link to={`/place/${userId}`}>
+                  <Button
+                    color="primary"
+                    variant="contained"
+                    type="button"
                   >
-                    เเก้ไขข้อมูล
-                  </Typography>
-                </Box>
+                    ข้อมูลสถานที่
+                  </Button>
+                </Link>
               </Box>
               <Divider />
               <CardContent sx={{ padding: "30px" }}>
@@ -341,9 +350,10 @@ function EditTrip() {
                                     style={{
                                       marginTop: "5px",
                                       marginBottom: "5px",
+                                      backgroundColor: "red"
                                     }}
                                     variant="contained"
-                                    color="secondary"
+
                                     onClick={() => handleRemoveTripJoin(index)}
                                   >
                                     ลบ
@@ -407,7 +417,7 @@ function EditTrip() {
                       type="button"
                       onClick={handleSubmit}
                     >
-                      Update
+                      บันทึก
                     </Button>
                   </Box>
                 </form>

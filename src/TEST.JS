@@ -1,18 +1,19 @@
-import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
-import { doc, getDoc, updateDoc } from 'firebase/firestore';
-import { firestore } from '../firebase';
-import DatePicker from 'react-datepicker'; // Import DatePicker
-import 'react-datepicker/dist/react-datepicker.css'; // Import DatePicker CSS
-import './edittrip.css'; // Import CSS file for styling
-import { ref, uploadBytes } from 'firebase/storage';
-import Navbar from '../navbar';
-import { storage } from '../firebase'; // import Firebase storage instance
+import React, { useState, useEffect } from "react";
+import { useParams ,  useNavigate } from "react-router-dom";
+import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { firestore } from "../firebase";
+import DatePicker from "react-datepicker"; // Import DatePicker
+import "react-datepicker/dist/react-datepicker.css"; // Import DatePicker CSS
+import "./editplace.css"; // Import CSS file for styling
+import { ref, uploadBytes } from "firebase/storage";
+import { storage } from "../firebase"; // import Firebase storage instance
 import {
   Card,
+  InputLabel,
   CardContent,
   Divider,
   Box,
+  Select,
   Typography,
   TextField,
   FormControlLabel,
@@ -25,35 +26,44 @@ import {
   MenuItem,
 } from "@mui/material";
 
-function EditTrip() {
+function EditPlace() {
   const { userId } = useParams();
   const [userData, setUserData] = useState({});
   const [profileImage, setProfileImage] = useState(null);
-  const [tripStatus, settripStatus] = useState('');
-  const [tripStartDate, setTripStartDate] = useState(new Date()); // State for trip start date
-  const [tripEndDate, setTripEndDate] = useState(new Date()); // State for trip end date
+  const [placestatus, setplaceStatus] = useState("");
+  const [placerun, setrunStatus] = useState("");
+  const [placeadd, setaddStatus] = useState("");
+  const [placetimestart, setplacetimestart] = useState(new Date()); // State for trip start date
+  const [placetimeend, setplacetimeend] = useState(new Date()); // State for trip end date
+  const [placewhogo, setWhogo] = useState([]);
 
+  const navigate = useNavigate();
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const userDoc = doc(firestore, 'trips', userId);
+        const userDoc = doc(firestore, "places", userId);
         const userSnapshot = await getDoc(userDoc);
         if (userSnapshot.exists()) {
           setUserData(userSnapshot.data());
-          settripStatus(userSnapshot.data().tripStatus || '');
+          setplaceStatus(userSnapshot.data().placestatus || "");
+          setrunStatus(userSnapshot.data().placerun || "");
+          setaddStatus(userSnapshot.data().placeadd || "");
           // Set trip start and end dates if available
-          if (userSnapshot.data().tripStartDate) {
-            setTripStartDate(new Date(userSnapshot.data().tripStartDate.seconds * 1000));
+          if (userSnapshot.data().placetimestart) {
+            setplacetimestart(
+              new Date(userSnapshot.data().placetimestart.seconds * 1000)
+            );
           }
-          if (userSnapshot.data().tripEndDate) {
-            setTripEndDate(new Date(userSnapshot.data().tripEndDate.seconds * 1000));
+          if (userSnapshot.data().placetimeend) {
+            setplacetimeend(
+              new Date(userSnapshot.data().placetimeend.seconds * 1000)
+            );
           }
-
         } else {
-          console.log('No such document!');
+          console.log("No such document!");
         }
       } catch (error) {
-        console.error('Error fetching user data: ', error);
+        console.error("Error fetching user data: ", error);
       }
     };
 
@@ -62,43 +72,14 @@ function EditTrip() {
 
   const handleUpdateUser = async () => {
     try {
-      if (profileImage) {
-        // อัปโหลดรูปภาพไปยัง Firebase Storage
-    
-        // สร้าง URL ของรูปภาพที่อัปโหลด
-        const profileImageUrl = await uploadProfileImageToStorage(profileImage, userId);
-        // อัปเดต tripProfileUrl ในข้อมูลผู้ใช้
-        setUserData((prevData) => ({
-          ...prevData,
-          tripProfileUrl: profileImageUrl,
-        }));
-      }
-      const userDoc = doc(firestore, 'trips', userId);
+      const userDoc = doc(firestore, "places", userId);
       await updateDoc(userDoc, userData);
-      console.log('User updated successfully!');
+      console.log("User updated successfully!");
     } catch (error) {
-      console.error('Error updating user: ', error);
+      console.error("Error updating user: ", error);
     }
   };
-  const uploadProfileImageToStorage = async (imageFile, userId) => {
-    try {
-      const storageRef = ref(storage, `trip/profiletrip/${userId}.jpg`);
-      await uploadBytes(storageRef, imageFile);
-      console.log('Image uploaded successfully!');
-      // สร้าง URL ของรูปภาพที่อัปโหลด
-      const profileImageUrl = `https://firebasestorage.googleapis.com/v0/b/${storage.app.options.storageBucket}/o/${encodeURIComponent('trip/profiletrip/' + userId + '.jpg')}?alt=media`;
-      
-      console.log('Profile image URL:', profileImageUrl);
-      
-      return profileImageUrl; // ส่งกลับ URL ของรูปภาพ
-    } catch (error) {
-      console.error('Error uploading image:', error);
-      return null; // หากเกิดข้อผิดพลาดในการอัปโหลด ส่งค่า null กลับไป
-    }
-  };
-  
 
-  
   const handleChange = (e) => {
     const { id, value } = e.target;
     setUserData((prevData) => ({
@@ -106,82 +87,142 @@ function EditTrip() {
       [id]: value,
     }));
   };
-  
-  const handleImageChange = (e) => {
-    const imageFile = e.target.files[0];
-    console.log('Selected image:', imageFile);
-    setProfileImage(imageFile);
-  };
-  const handleSubmit = () => {
-    handleUpdateUser();
-    alert('แก้ไขข้อมูลสำเร็จ');
-  };
-  const handleGenderChange = (e) => {
-    const value = e.target.value;
-    settripStatus(value);
+
+
+  const handleWhogoChange = (index, newValue) => {
+    const updatedWhogo = [...placewhogo];
+    updatedWhogo[index] = newValue;
+    setWhogo(updatedWhogo);
     setUserData((prevData) => ({
       ...prevData,
-      tripStatus: value,
+      placewhogo: updatedWhogo,
     }));
   };
 
+  const handleAddWhogo = () => {
+    setWhogo((prevWhogo) => [...prevWhogo, ""]);
+    setUserData((prevData) => ({
+      ...prevData,
+      placewhogo: [...prevData.placewhogo, ""],
+    }));
+  };
+
+  const handleRemoveTripJoin = (index) => {
+    const updatedWhogo = [...placewhogo];
+    updatedWhogo.splice(index, 1);
+    setWhogo(updatedWhogo);
+    setUserData((prevData) => ({
+      ...prevData,
+      placewhogo: updatedWhogo,
+    }));
+  };
+  
+
+  const handleImageChange = (e) => {
+    const imageFile = e.target.files[0];
+    console.log("Selected image:", imageFile);
+    setProfileImage(imageFile);
+  };
+
+  const handlePlaceChange3 = (e) => {
+    const value = e.target.value;
+    setplaceStatus(value);
+    setUserData((prevData) => ({
+      ...prevData,
+      placestatus: value,
+    }));
+  };
+  const handlePlaceChange2 = (e) => {
+    const value = e.target.value;
+    setaddStatus(value);
+    setUserData((prevData) => ({
+      ...prevData,
+      placeadd: value,
+    }));
+  };
+  const handlePlaceChange = (e) => {
+    const value = e.target.value;
+    setrunStatus(value);
+    setUserData((prevData) => ({
+      ...prevData,
+      placerun: value,
+    }));
+  };
   return (
-    <div>
-    <Navbar/>
-    <div style={{marginLeft: 200}}>
-    <Grid container spacing={0}>
-      <Grid item lg={12} md={12} xs={12}>
-        <Card variant="outlined">
-          <Box
-            sx={{
-              padding: "15px 30px",
-              display: "flex",
-              alignItems: "center",
-            }}
-          >
-            <Box flexGrow={1}>
-              <Typography variant="h5" style={{fontSize:'18px' ,fontWeight: 'bold', fontFamily: 'Arial, sans-serif' ,color: '#4a5568'}}>เเก้ไขข้อมูล</Typography>
-            </Box>
-          </Box>
-          <Divider />
-          <CardContent sx={{ padding: "30px" }}>
-            <form>
-            <Grid container spacing={2}>
-<Grid item lg={6}>
-  {/* ตำแหน่ง TextField ที่ 1 */}
-  <TextField
-    id="tripCreate"
-    label="tripCreate"
-    variant="outlined"
-    fullWidth
-    sx={{ mb: 2 }}
-    value={userData.tripCreate || ''}
-    onChange={handleChange}
-  />
-</Grid>
-<Grid item lg={6}>
-  {/* ตำแหน่ง TextField ที่ 2 */}
-  <TextField
-    id="tripName"
-    label="tripName"
-    variant="outlined"
-    fullWidth
-    sx={{ mb: 2 }}
-    value={userData.tripName || ''}
-    onChange={handleChange}
-  />
-</Grid>
-</Grid>
+    <div style={{ paddingTop: "60px" }}>
+      <div className="edit-user-container">
+        <h1>แก้ไขสถานที่</h1>
+        <form>
+          <div className="form-group">
+            <label>placename:</label>
+            <input
+              type="text"
+              name="placename"
+              value={userData.placename || ""}
+              onChange={handleChange}
+              className="input"
+            />
+          </div>
+          <div className="form-group">
+            <label>placeaddress:</label>
+            <input
+              type="text"
+              name="placeaddress"
+              value={userData.placeaddress || ""}
+              onChange={handleChange}
+              className="input"
+            />
+          </div>
+          <div className="form-group">
+            <label>placeprovince:</label>
+            <input
+              type="text"
+              name="placeprovince"
+              value={userData.placeprovince || ""}
+              onChange={handleChange}
+              className="input"
+            />
+          </div>
+          <div className="form-group">
+            <label>placetripid:</label>
+            <input
+              type="text"
+              name="placetripid"
+              value={userData.placetripid || ""}
+              onChange={handleChange}
+              className="input"
+            />
+          </div>
+          <div className="form-group">
+            <label>placeLatitude:</label>
+            <input
+              type="text"
+              name="placeLatitude"
+              value={userData.placeLatitude || ""}
+              onChange={handleChange}
+              className="input"
+            />
+          </div>
+          <div className="form-group">
+            <label>placeLongitude:</label>
+            <input
+              type="text"
+              name="placeLongitude"
+              value={userData.placeLongitude || ""}
+              onChange={handleChange}
+              className="input"
+            />
+          </div>
 
           <div className="form-group">
-            <label>tripStartDate:</label>
+            <label>placetimestart:</label>
             <DatePicker
-              selected={tripStartDate}
+              selected={placetimestart}
               onChange={(date) => {
-                setTripStartDate(date);
+                setplacetimestart(date);
                 setUserData((prevData) => ({
                   ...prevData,
-                  tripStartDate: date,
+                  placetimestart: date,
                 }));
               }}
               showTimeSelect
@@ -193,14 +234,14 @@ function EditTrip() {
             />
           </div>
           <div className="form-group">
-            <label>tripEndDate:</label>
+            <label>placetimeend:</label>
             <DatePicker
-              selected={tripEndDate}
+              selected={placetimeend}
               onChange={(date) => {
-                setTripEndDate(date);
+                setplacetimeend(date);
                 setUserData((prevData) => ({
                   ...prevData,
-                  tripEndDate: date,
+                  placetimeend: date,
                 }));
               }}
               showTimeSelect
@@ -212,89 +253,106 @@ function EditTrip() {
             />
           </div>
           <div className="form-group">
-  <label>tripJoin:</label>
-  <ul>
-    {userData.tripJoin && userData.tripJoin.map((item, index) => (
-      <li key={index}>
-        <input
-          type="text"
-          value={item}
-          onChange={(e) => {
-            const updatedtripJoin = [...userData.tripJoin];
-            updatedtripJoin[index] = e.target.value;
-            setUserData((prevData) => ({
-              ...prevData,
-              tripJoin: updatedtripJoin,
-            }));
-          }}
-        />
-        <button
-          type="button"
-          onClick={() => {
-            const updatedtripJoin = [...userData.tripJoin];
-            updatedtripJoin.splice(index, 1);
-            setUserData((prevData) => ({
-              ...prevData,
-              tripJoin: updatedtripJoin,
-            }));
-          }}
-        >
-          ลบ
-        </button>
-      </li>
-    ))}
-  </ul>
-  <button
-    type="button"
-    onClick={() => {
-      setUserData((prevData) => ({
-        ...prevData,
-        tripJoin: [...prevData.tripJoin, ''], // เพิ่มค่าใหม่เป็นสตริงเปล่า
-      }));
-    }}
-  >
-    เพิ่ม
-  </button>
-</div>
+            <label>useruid</label>
+            <input
+              type="text"
+              name="useruid"
+              value={userData.useruid || ""}
+              onChange={handleChange}
+              className="input"
+            />
+          </div>
+          <div className="form-group">
+            <label>placewhogo:</label>
+            <ul>
+              {userData.placewhogo &&
+                userData.placewhogo.map((item, index) => (
+                  <li key={index}>
+                    <input
+                      type="text"
+                      value={item}
+                      onChange={(e) => {
+                        const updatedPlacewhogo = [...userData.placewhogo];
+                        updatedPlacewhogo[index] = e.target.value;
+                        setUserData((prevData) => ({
+                          ...prevData,
+                          placewhogo: updatedPlacewhogo,
+                        }));
+                      }}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const updatedPlacewhogo = [...userData.placewhogo];
+                        updatedPlacewhogo.splice(index, 1);
+                        setUserData((prevData) => ({
+                          ...prevData,
+                          placewhogo: updatedPlacewhogo,
+                        }));
+                      }}
+                    >
+                      ลบ
+                    </button>
+                  </li>
+                ))}
+            </ul>
+            <button
+              type="button"
+              onClick={() => {
+                setUserData((prevData) => ({
+                  ...prevData,
+                  placewhogo: [...prevData.placewhogo, ""], // เพิ่มค่าใหม่เป็นสตริงเปล่า
+                }));
+              }}
+            >
+              เพิ่ม
+            </button>
+          </div>
 
-              <FormControl fullWidth sx={{ mb: 2 }}>
-              <Grid container spacing={2} alignItems="center">
-<Grid item>
-  <Typography sx={{ mr: 1 }}>tripStatus:</Typography>
-</Grid>
-<Grid item>
-  <RadioGroup row name="tripStatus" value={tripStatus} onChange={handleGenderChange}>
-    <FormControlLabel value="ยังไม่เริ่มต้น" control={<Radio />} label="ยังไม่เริ่มต้น" />
-    <FormControlLabel value="กำลังดำเนินการ" control={<Radio />} label="กำลังดำเนินการ" />
-    <FormControlLabel value="สิ้นสุด" control={<Radio />} label="สิ้นสุด" />
-  </RadioGroup>
-</Grid>
-</Grid>
-
-              </FormControl>
-              <TextField
-                id="tripProfileUrl"
-                label="Trip Image URL"
-                variant="outlined"
-                type="file"
-                fullWidth
-                sx={{ mb: 2 }}
-                onChange={handleImageChange}
-                InputLabelProps={{ shrink: true }}
-              />
-              <Box textAlign="right">
-                <Button color="primary" variant="contained" type="button" onClick={handleSubmit}>
-                  Update
-                </Button>
-              </Box>
-            </form>
-          </CardContent>
-        </Card>
-      </Grid>
-    </Grid>
-  </div>
-  </div>
+          <div className="form-group">
+            <label>placeadd:</label>
+            <select
+              name="placeadd"
+              value={placeadd}
+              onChange={handlePlaceChange}
+              className="input"
+            >
+              <option value="Yes">Yes</option>
+              <option value="No">No</option>
+            </select>
+          </div>
+          <div className="form-group">
+            <label>placerun:</label>
+            <select
+              name="placerun"
+              value={placerun}
+              onChange={handlePlaceChange2}
+              className="input"
+            >
+              <option value="Start">Start</option>
+              <option value="Running">Running</option>
+              <option value="End">End</option>
+            </select>
+          </div>
+          <div className="form-group">
+            <label>placestatus:</label>
+            <select
+              name="placestatus"
+              value={placestatus}
+              onChange={handlePlaceChange3}
+              className="input"
+            >
+              <option value="Added">Added</option>
+              <option value="Wait">Wait</option>
+            </select>
+          </div>
+          <button type="button" onClick={handleUpdateUser} className="button">
+            อัปเดต
+          </button>
+        </form>
+      </div>
+    </div>
   );
 }
 
-export default EditTrip;
+export default EditPlace;

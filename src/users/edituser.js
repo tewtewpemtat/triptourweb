@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams,useNavigate } from "react-router-dom";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { firestore } from "../firebase";
 import "./edituser.css"; // Import CSS file for styling
@@ -28,6 +28,7 @@ function EditUser() {
   const [userData, setUserData] = useState({});
   const [profileImage, setProfileImage] = useState(null); // State เพื่อเก็บรูปภาพที่เลือก
   const [gender, setGender] = useState(""); // State เพื่อเก็บเพศที่ผู้ใช้เลือก
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -67,6 +68,8 @@ function EditUser() {
       const userDoc = doc(firestore, "users", userId);
       await updateDoc(userDoc, userData);
       console.log("User updated successfully!");
+      alert("แก้ไขข้อมูลสำเร็จ");
+      navigate('/users');
     } catch (error) {
       console.error("Error updating user: ", error);
     }
@@ -105,7 +108,6 @@ function EditUser() {
   };
   const handleSubmit = () => {
     handleUpdateUser();
-    alert("แก้ไขข้อมูลสำเร็จ");
   };
   const handleGenderChange = (e) => {
     const value = e.target.value;
@@ -248,7 +250,7 @@ function EditUser() {
                       type="button"
                       onClick={handleSubmit}
                     >
-                      Update
+                      บันทึก
                     </Button>
                   </Box>
                 </form>

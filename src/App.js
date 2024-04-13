@@ -24,9 +24,9 @@ function App() {
           <Route path="/users" element={<ShowUser />} />
           <Route path="/edituser/:userId" element={<EditUser />} />
           <Route path="/edittrip/:userId" element={<EditTrip />} />
-          <Route path="/editplace/:userId" element={<EditPlace />} />
+          <Route path="/editplace/:placeId/:userId" element={<EditPlace />} />
           <Route path="/trips" element={<ShowTrip />} />
-          <Route path="/places" element={<ShowPlace />} />
+          <Route path="/place/:userId" element={<ShowPlace />} />
           <Route path="/manage" element={<Manage />} />
           <Route path="/manage/add" element={<Add />} />
         </Routes>

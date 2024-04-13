@@ -6,7 +6,7 @@ import PersonIcon from '@material-ui/icons/Person';
 import FlightIcon from '@material-ui/icons/Flight';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
-
+import MapIcon from '@mui/icons-material/Map';
 
 const useStyles = makeStyles((theme) => ({
   sidebar: {
@@ -56,12 +56,12 @@ function Navbar() {
 
   return (
     <div>
-      <AppBar style={{margin : '0px 25px 0px 25px' , backgroundColor: '#fcfafa'}} position="static">
-        <Toolbar style={{ display: 'flex', justifyContent: 'space-between' }}>
+      <AppBar style={{ backgroundColor: '#fcfafa'}} position="static">
+        <Toolbar style={{ display: 'flex', justifyContent: 'space-between'}}>
           <div>
           </div>
           <div>
-          <IconButton color="inherit" onClick={handleLogout} style={{ color: '#757575' }}>
+          <IconButton color="inherit" onClick={handleLogout} style={{  color: '#757575' }}>
   <ExitToAppIcon />
 </IconButton>
 
@@ -81,7 +81,7 @@ function Navbar() {
             </Link>
             <Link to="/trips" className={classes.linkText}>
               <ListItem button key="ข้อมูลทริป">
-                <ListItemIcon><FlightIcon /></ListItemIcon>
+                <ListItemIcon><MapIcon /></ListItemIcon>
                 <ListItemText primary="ข้อมูลทริป" />
               </ListItem>
             </Link>
