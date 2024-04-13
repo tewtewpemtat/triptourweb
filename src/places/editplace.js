@@ -10,7 +10,6 @@ import { storage } from "../firebase"; // import Firebase storage instance
 import Navbar from "../navbar";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import PhotoIcon from '@mui/icons-material/Photo';
-
 import {
   Card,
   InputLabel,
@@ -137,7 +136,7 @@ function EditPlace() {
   const uploadProfileImageToStorage = async (imageFile,userId) => {
     try {
       const randomImg = generateRandomNumber();
-      const filePath = `trip/places/profilepicedit/${placeId}/${userId}${randomImg}.jpg`;
+      const filePath = `trip/places/profilepicedit/${placeId}/${userData.placename}${randomImg}.jpg`;
       const storageRef = ref(storage, filePath);
       await uploadBytes(storageRef, imageFile);
       console.log("Image uploaded successfully!");
