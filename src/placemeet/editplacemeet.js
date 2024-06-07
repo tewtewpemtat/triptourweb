@@ -28,7 +28,7 @@ import {
   FormControl,
   MenuItem,
 } from "@mui/material";
-
+import { margins } from '../styles/margin'
 function EditPlaceMeet() {
   const { placeTripId, userId } = useParams();
   const [userData, setUserData] = useState({});
@@ -135,7 +135,7 @@ function EditPlaceMeet() {
   return (
     <div>
       <Navbar />
-      <div style={{ marginLeft: 200 }}>
+      <div style={{ marginLeft: margins.editMargin }}>
         <Grid container spacing={0}>
           <Grid item lg={12} md={12} xs={12}>
             <Card variant="outlined">

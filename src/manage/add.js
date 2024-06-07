@@ -28,11 +28,11 @@ import {
   Radio,
   FormControl,
   MenuItem,
-  IconButton, // Import IconButton component
-  InputAdornment, // Import InputAdornment component
+  IconButton, 
+  InputAdornment, 
 } from "@mui/material";
-import { Visibility, VisibilityOff } from "@mui/icons-material"; // Import Visibility and VisibilityOff icons
-
+import { Visibility, VisibilityOff } from "@mui/icons-material"; 
+import { margins } from '../styles/margin'
 function Add() {
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
@@ -90,7 +90,7 @@ function Add() {
       return;
     }
     try {
-      // ตรวจสอบว่ามีเอกสารใน collection "admins" ที่มี email ซ้ำหรือไม่
+      
       const querySnapshot = await getDocs(
         query(collection(firestore, "admins"), where("email", "==", email))
       );
@@ -99,7 +99,7 @@ function Add() {
         return;
       }
 
-      // สร้างเอกสารใหม่ใน collection "admins" ด้วยข้อมูล email และ password
+      
       const docRef = await addDoc(collection(firestore, "admins"), {
         email,
         password,
@@ -118,7 +118,7 @@ function Add() {
   return (
     <div>
       <Navbar />
-      <div style={{ marginLeft: 200 }}>
+      <div style={{ marginLeft:margins.editMargin }}>
         <Grid container spacing={0}>
           <Grid item lg={12} md={12} xs={12}>
             <Card variant="outlined">

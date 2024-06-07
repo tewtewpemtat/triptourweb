@@ -13,10 +13,13 @@ import ShowTimeLine from './timeline/showtimeline';
 import EditTimeLine from './timeline/edittimeline'; 
 import EditPlaceMeet from './placemeet/editplacemeet';
 import ShowPlaceMeet from './placemeet/showplacemeet';
+import ShowInterest from './interest/showinterest';
+import EditInterest from './interest/editintetest';
 import Manage from './manage/manage'; 
 import Add from './manage/add'; 
 import Login from './authen/login'; 
 import './App.css';
+
 
 
 
@@ -33,6 +36,8 @@ function App() {
           <Route path="/edittimeline/:userId" element={<EditTimeLine />} />
           <Route path="/placemeet" element={<ShowPlaceMeet />} />
           <Route path="/editplacemeet/:placeTripId/:userId" element={<EditPlaceMeet />} />
+          <Route path="/interest" element={<ShowInterest />} />
+          <Route path="/editinterest/:placeTripId/:userId" element={<EditInterest />} />
           <Route path="/edittrip/:userId" element={<EditTrip />} />
           <Route path="/editplace/:placeId/:userId" element={<EditPlace />} />
           <Route path="/trips" element={<ShowTrip />} />

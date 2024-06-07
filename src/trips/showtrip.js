@@ -30,7 +30,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import CreateIcon from "@mui/icons-material/Create";
 import DeleteIcon from "@mui/icons-material/Delete";
 import IconButton from "@mui/material/IconButton";
-
+import { margins } from '../styles/margin'
 const useStyles = makeStyles((theme) => ({
   table: {
     borderCollapse: "collapse",
@@ -124,7 +124,7 @@ function ShowTrip() {
   return (
     <div>
       <Navbar />
-      <Box sx={{ marginLeft: 25 }}>
+      <Box sx={{ marginLeft: margins.showMargin }}>
         <Card variant="outlined">
           <CardContent>
             <Box
@@ -132,7 +132,7 @@ function ShowTrip() {
                 display: "grid",
                 gridTemplateColumns: "repeat(4, 1fr)",
                 gridColumnGap: 10,
-                marginLeft: "5px",
+            
                 marginBottom: "10px",
               }}
             >
@@ -182,8 +182,8 @@ function ShowTrip() {
                   <TextField
                     variant="outlined"
                     fullWidth
-                    label="Start Date" 
-                    InputLabelProps={{ shrink: true }} 
+                    label="Start Date"
+                    InputLabelProps={{ shrink: true }}
                   />
                 }
               />
@@ -201,8 +201,8 @@ function ShowTrip() {
                   <TextField
                     variant="outlined"
                     fullWidth
-                    label="End Date" 
-                    InputLabelProps={{ shrink: true }} 
+                    label="End Date"
+                    InputLabelProps={{ shrink: true }}
                   />
                 }
               />

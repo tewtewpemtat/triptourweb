@@ -30,7 +30,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import CreateIcon from "@mui/icons-material/Create";
 import DeleteIcon from "@mui/icons-material/Delete";
 import IconButton from "@mui/material/IconButton";
-
+import { margins } from '../styles/margin'
 const useStyles = makeStyles((theme) => ({
   table: {
     borderCollapse: "collapse",
@@ -105,7 +105,7 @@ function ShowPlace() {
   return (
     <div>
       <Navbar />
-      <Box sx={{ marginLeft: 25 }}>
+      <Box sx={{ marginLeft: margins.showMargin }}>
         <Card variant="outlined">
           <CardContent>
             <Box sx={{ overflow: { xs: "auto", sm: "unset" } }}>

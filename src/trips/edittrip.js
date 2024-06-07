@@ -3,14 +3,19 @@ import { useParams } from "react-router-dom";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { firestore } from "../firebase";
 import { Link, useNavigate } from "react-router-dom";
-import DatePicker from "react-datepicker"; 
-import "react-datepicker/dist/react-datepicker.css"; 
-import "./edittrip.css"; 
-import { ref, uploadBytes ,deleteObject ,getDownloadURL} from "firebase/storage";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import "./edittrip.css";
+import {
+  ref,
+  uploadBytes,
+  deleteObject,
+  getDownloadURL,
+} from "firebase/storage";
 import Navbar from "../navbar";
-import { storage } from "../firebase"; 
+import { storage } from "../firebase";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
-import PhotoIcon from '@mui/icons-material/Photo';
+import PhotoIcon from "@mui/icons-material/Photo";
 import {
   Card,
   InputLabel,
@@ -29,14 +34,14 @@ import {
   FormControl,
   MenuItem,
 } from "@mui/material";
-
+import { margins } from '../styles/margin'
 function EditTrip() {
   const { userId } = useParams();
   const [userData, setUserData] = useState({});
   const [profileImage, setProfileImage] = useState(null);
   const [tripStatus, settripStatus] = useState("");
-  const [tripStartDate, setTripStartDate] = useState(new Date()); 
-  const [tripEndDate, setTripEndDate] = useState(new Date()); 
+  const [tripStartDate, setTripStartDate] = useState(new Date());
+  const [tripEndDate, setTripEndDate] = useState(new Date());
   const [tripJoin, setTripJoin] = useState([]);
   const [tripLimit, setTripLimit] = useState([]);
   const navigate = useNavigate();
@@ -89,7 +94,10 @@ function EditTrip() {
         if (userData.tripProfileUrl) {
           await deleteOldImage(userData.tripProfileUrl);
         }
-        const profileLink = await uploadProfileImageToStorage(profileImage, userId);
+        const profileLink = await uploadProfileImageToStorage(
+          profileImage,
+          userId
+        );
         updatedUserData.tripProfileUrl = profileLink;
       }
       const userDoc = doc(firestore, "trips", userId);
@@ -103,7 +111,6 @@ function EditTrip() {
 
   const uploadProfileImageToStorage = async (imageFile, userId) => {
     try {
-      
       const filePath = `trip/profiletrip/${userId}.jpg`;
       const storageRef = ref(storage, filePath);
       await uploadBytes(storageRef, imageFile);
@@ -160,7 +167,7 @@ function EditTrip() {
     setTripLimit(value);
     setUserData((prevData) => ({
       ...prevData,
-      tripLimit: value, 
+      tripLimit: value,
     }));
   };
 
@@ -184,7 +191,7 @@ function EditTrip() {
   return (
     <div>
       <Navbar />
-      <div style={{ marginLeft: 200 }}>
+      <div style={{ marginLeft: margins.editMargin}}>
         <Grid container spacing={0}>
           <Grid item lg={12} md={12} xs={12}>
             <Card variant="outlined">
@@ -408,23 +415,26 @@ function EditTrip() {
                     type="file"
                     inputProps={{ accept: ".jpg, .jpeg, .png" }}
                     onChange={handleImageChange}
-                    style={{ display: "none" }} 
+                    style={{ display: "none" }}
                   />
                   <Box
                     sx={{
                       display: "flex",
                       alignItems: "center",
-                
+
                       marginBottom: "20px",
                     }}
                   >
-                    <InputLabel htmlFor="upload-file" sx={{ cursor: "pointer" }}>
+                    <InputLabel
+                      htmlFor="upload-file"
+                      sx={{ cursor: "pointer" }}
+                    >
                       <Button
                         variant="contained"
                         component="span"
                         startIcon={<PhotoIcon />}
                       >
-                        เปลี่ยนรูปทริป 
+                        เปลี่ยนรูปทริป
                       </Button>
                     </InputLabel>
                     <Typography variant="body1" sx={{ marginLeft: "10px" }}>

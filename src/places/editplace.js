@@ -5,7 +5,12 @@ import { firestore } from "../firebase";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import "./editplace.css";
-import { ref, uploadBytes, getDownloadURL ,deleteObject } from "firebase/storage";
+import {
+  ref,
+  uploadBytes,
+  getDownloadURL,
+  deleteObject,
+} from "firebase/storage";
 import { storage } from "../firebase";
 import Navbar from "../navbar";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
@@ -28,7 +33,7 @@ import {
   FormControl,
   MenuItem,
 } from "@mui/material";
-
+import { margins } from '../styles/margin'
 function EditPlace() {
   const { userId, placeId } = useParams();
   const [userData, setUserData] = useState({});
@@ -121,7 +126,10 @@ function EditPlace() {
         if (userData.placepicUrl) {
           await deleteOldImage(userData.placepicUrl);
         }
-        const profileLink = await uploadProfileImageToStorage(selectedFile, userId);
+        const profileLink = await uploadProfileImageToStorage(
+          selectedFile,
+          userId
+        );
         updatedUserData.placepicUrl = profileLink;
       }
       const userDoc = doc(firestore, "places", userId);
@@ -198,7 +206,7 @@ function EditPlace() {
   return (
     <div>
       <Navbar />
-      <div style={{ marginLeft: 200 }}>
+      <div style={{ marginLeft: margins.editMargin }}>
         <Grid container spacing={0}>
           <Grid item lg={12} md={12} xs={12}>
             <Card variant="outlined">

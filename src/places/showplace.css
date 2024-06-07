@@ -1,12 +1,12 @@
-/* TablePage.css */
+
 table {
     width: 100%;
     border-collapse: collapse;
-    border: 2px solid #ddd; /* เพิ่มเส้นขอบ */
+    border: 2px solid #ddd;
   }
   
   th, td {
-    padding: 12px; /* เพิ่มพื้นที่และระยะห่าง */
+    padding: 12px;
     text-align: left;
     border-bottom: 1px solid #ddd;
   }
@@ -22,7 +22,7 @@ table {
   img {
     max-width: 50px;
     max-height: 50px;
-    margin: 4px; /* เพิ่มขอบระหว่างรูปภาพ */
+    margin: 4px;
   }
   .action-icon {
     width: 20px;

@@ -1,8 +1,7 @@
-
 import React, { useEffect, useState } from "react";
-import { firestore } from "../firebase"; 
-import { collection, getDocs, doc, deleteDoc } from "firebase/firestore"; 
-import "./showplacemeet.css"; 
+import { firestore } from "../firebase";
+import { collection, getDocs, doc, deleteDoc } from "firebase/firestore";
+import "./showinterest.css";
 import {
   BrowserRouter as Router,
   Routes,
@@ -51,7 +50,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function ShowPlaceMeet() {
+function ShowInterest() {
   const { userId } = useParams();
   const [tripData, setUserData] = useState([]);
   const navigate = useNavigate();
@@ -67,11 +66,11 @@ function ShowPlaceMeet() {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const usersRef = collection(firestore, "placemeet");
+        const usersRef = collection(firestore, "interest");
         const usersSnapshot = await getDocs(usersRef);
         const userDataArray = usersSnapshot.docs.map((doc) => {
           const data = doc.data();
-          data.uid = doc.id; 
+          data.uid = doc.id;
           return data;
         });
         setUserData(userDataArray);
@@ -87,7 +86,7 @@ function ShowPlaceMeet() {
     const confirmed = window.confirm("โปรดยืนยันการลบข้อมูล");
     if (confirmed) {
       try {
-        await deleteDoc(doc(firestore, "placemeet", uid));
+        await deleteDoc(doc(firestore, "interest", uid));
         const updatedUserData = tripData.filter((user) => user.uid !== uid);
         setUserData(updatedUserData);
         alert("ลบข้อมูลสำเร็จ");
@@ -143,19 +142,6 @@ function ShowPlaceMeet() {
                           color: "#4a5568",
                         }}
                       >
-                        PLACENAME
-                      </Typography>
-                    </TableCell>
-                    <TableCell style={{ backgroundColor: "transparent" }}>
-                      <Typography
-                        variant="subtitle1"
-                        style={{
-                          fontSize: "12px",
-                          fontWeight: "bold",
-                          fontFamily: "Arial, sans-serif",
-                          color: "#4a5568",
-                        }}
-                      >
                         PLACEADDRESS
                       </Typography>
                     </TableCell>
@@ -169,7 +155,7 @@ function ShowPlaceMeet() {
                           color: "#4a5568",
                         }}
                       >
-                       PLACETRIPID
+                        PLACETRIPID
                       </Typography>
                     </TableCell>
                     <TableCell style={{ backgroundColor: "transparent" }}>
@@ -245,7 +231,6 @@ function ShowPlaceMeet() {
                       <TableRow key={index}>
                         <TableCell>{user.uid || "N/A"}</TableCell>
                         <TableCell>{user.placeid || "N/A"}</TableCell>
-                        <TableCell>{user.placename || "N/A"}</TableCell>
                         <TableCell>{user.placeaddress || "N/A"}</TableCell>
                         <TableCell>{user.placetripid || "N/A"}</TableCell>
                         <TableCell>{user.placeLatitude || "N/A"}</TableCell>
@@ -267,7 +252,9 @@ function ShowPlaceMeet() {
                           )}
                         </TableCell>
                         <TableCell>
-                          <Link to={`/editplacemeet/${user.placetripid}/${user.uid}`}>
+                          <Link
+                            to={`/editinterest/${user.placetripid}/${user.uid}`}
+                          >
                             <IconButton>
                               <CreateIcon />
                             </IconButton>
@@ -291,4 +278,4 @@ function ShowPlaceMeet() {
   );
 }
 
-export default ShowPlaceMeet;
+export default ShowInterest;

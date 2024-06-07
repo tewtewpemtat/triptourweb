@@ -11,7 +11,7 @@ import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import PhotoIcon from "@mui/icons-material/Photo";
 import DatePicker from "react-datepicker"; 
 import "react-datepicker/dist/react-datepicker.css"; 
-
+import { margins } from '../styles/margin'
 import {
   Card,
   CardContent,
@@ -90,7 +90,7 @@ function EditTimeLine() {
   return (
     <div>
       <Navbar />
-      <div style={{ marginLeft: 200 }}>
+      <div style={{ marginLeft: margins.editMargin}}>
         <Grid container spacing={0}>
           <Grid item lg={12} md={12} xs={12}>
             <Card variant="outlined">
@@ -121,7 +121,6 @@ function EditTimeLine() {
                 <form>
                   <Grid container spacing={2}>
                     <Grid item lg={6}>
-                      {/* ตำแหน่ง TextField ที่ 1 */}
                       <TextField
                         id="placeid"
                         label="placeId"
@@ -133,7 +132,6 @@ function EditTimeLine() {
                       />
                     </Grid>
                     <Grid item lg={6}>
-                      {/* ตำแหน่ง TextField ที่ 2 */}
                       <TextField
                         id="placetripid"
                         label="placeTripId"
@@ -147,7 +145,6 @@ function EditTimeLine() {
                   </Grid>
                   <Grid container spacing={2}>
                     <Grid item lg={6}>
-                      {/* TextField สำหรับ Contact Number */}
                       <TextField
                         id="useruid"
                         label="userUid"
@@ -159,7 +156,6 @@ function EditTimeLine() {
                       />
                     </Grid>{" "}
                     <Grid item lg={6}>
-                      {/* ตำแหน่ง TextField ที่ 2 */}
                       <TextField
                         id="distance"
                         label="distance"

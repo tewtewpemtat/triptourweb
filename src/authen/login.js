@@ -1,10 +1,9 @@
-// Login.js
 import React, { useState, useEffect } from "react";
 import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth, firestore, getDoc, doc } from "../firebase"; // นำเข้า Firebase authentication และ firestore instances ที่สร้างไว้ก่อนหน้านี้
+import { auth, firestore, getDoc, doc } from "../firebase";
 import { useNavigate, Navigate } from "react-router-dom";
 import { onAuthStateChanged } from "firebase/auth";
-import "./login.css"; // Corrected CSS import path
+import "./login.css";
 import { collection, query, where, getDocs } from "firebase/firestore";
 function Login() {
   const [email, setEmail] = useState("");
@@ -15,28 +14,23 @@ function Login() {
     e.preventDefault();
     e.preventDefault();
     try {
-      // Query the admins collection to check if the email exists
       const adminsRef = collection(firestore, "admins");
       const q = query(adminsRef, where("email", "==", email));
       const querySnapshot = await getDocs(q);
 
       if (!querySnapshot.empty) {
-        // User with the provided email exists, now check the password
         querySnapshot.forEach((doc) => {
           const adminData = doc.data();
           if (adminData.password === password) {
-            // Authentication successful
-            localStorage.setItem("authToken", email); // Using email as auth token
+            localStorage.setItem("authToken", email);
             localStorage.setItem("email", email);
             navigate("/users");
             alert("เข้าสู่ระบบสำเร็จ");
           } else {
-            // Incorrect password
             alert("รหัสผ่านไม่ถูกต้อง");
           }
         });
       } else {
-        // User not found in admins collection
         alert("อีเมลไม่ถูกต้อง");
       }
     } catch (error) {

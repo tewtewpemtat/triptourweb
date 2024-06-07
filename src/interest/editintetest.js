@@ -1,27 +1,27 @@
 import React, { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
-import { ListItemIcon } from "@material-ui/core";
 import { firestore } from "../firebase";
-import "./edituser.css";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import "./editinterest.css";
 import {
   ref,
   uploadBytes,
   getDownloadURL,
   deleteObject,
 } from "firebase/storage";
-import Navbar from "../navbar";
 import { storage } from "../firebase";
+import Navbar from "../navbar";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import PhotoIcon from "@mui/icons-material/Photo";
-import { margins } from '../styles/margin'
-
 import {
   Card,
-  CardContent,
   InputLabel,
+  CardContent,
   Divider,
   Box,
+  Select,
   Typography,
   TextField,
   FormControlLabel,
@@ -33,22 +33,27 @@ import {
   FormControl,
   MenuItem,
 } from "@mui/material";
-
-function EditUser() {
-  const { userId } = useParams();
+import { margins } from '../styles/margin'
+function EditInterest() {
+  const { placeTripId, userId } = useParams();
   const [userData, setUserData] = useState({});
-  const [profileImage, setProfileImage] = useState(null);
-  const [gender, setGender] = useState("");
   const navigate = useNavigate();
+  const [selectedFile, setSelectedFile] = useState(null);
+
+  useEffect(() => {
+    const authToken = localStorage.getItem("authToken");
+    if (!authToken) {
+      navigate("/login", { replace: true });
+    }
+  }, [navigate]);
 
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const userDoc = doc(firestore, "users", userId);
+        const userDoc = doc(firestore, "interest", userId);
         const userSnapshot = await getDoc(userDoc);
         if (userSnapshot.exists()) {
           setUserData(userSnapshot.data());
-          setGender(userSnapshot.data().gender || "");
         } else {
           console.log("No such document!");
         }
@@ -73,17 +78,20 @@ function EditUser() {
     try {
       let updatedUserData = { ...userData };
 
-      if (profileImage) {
-        if (userData.profileImageUrl) {
-          await deleteOldImage(userData.profileImageUrl);
+      if (selectedFile) {
+        if (userData.placepicUrl) {
+          await deleteOldImage(userData.placepicUrl);
         }
         const profileLink = await uploadProfileImageToStorage(
-          profileImage,
+          selectedFile,
           userId
         );
-        updatedUserData.profileImageUrl = profileLink;
+        updatedUserData.placepicUrl = profileLink;
+        console.log(profileLink);
+        console.log(updatedUserData.placepicUrl);
       }
-      const userDoc = doc(firestore, "users", userId);
+
+      const userDoc = doc(firestore, "interest", userId);
       await updateDoc(userDoc, updatedUserData);
       alert("แก้ไขข้อมูลสำเร็จ");
       console.log("User updated successfully!");
@@ -91,22 +99,18 @@ function EditUser() {
       console.error("Error updating user: ", error);
     }
   };
-  const handleChange = (e) => {
-    const { id, value } = e.target;
-    setUserData((prevData) => ({
-      ...prevData,
-      [id]: value,
-    }));
-  };
 
-  const handleImageChange = (e) => {
-    const imageFile = e.target.files[0];
-    setProfileImage(imageFile);
-  };
+  function generateRandomNumber() {
+    const min = 100000000;
+    const max = 999999999;
+    const randomNumber = Math.floor(Math.random() * (max - min + 1)) + min;
+    return randomNumber.toString();
+  }
 
   const uploadProfileImageToStorage = async (imageFile, userId) => {
     try {
-      const filePath = `profilepic/${userId}/profile.jpg`;
+      const randomImg = generateRandomNumber();
+      const filePath = `trip/places/interest/${placeTripId}/${randomImg}.jpg`;
       const storageRef = ref(storage, filePath);
       await uploadBytes(storageRef, imageFile);
       console.log("Image uploaded successfully!");
@@ -121,16 +125,17 @@ function EditUser() {
     }
   };
 
-  const handleSubmit = () => {
-    handleUpdateUser();
-  };
-  const handleGenderChange = (e) => {
-    const value = e.target.value;
-    setGender(value);
+  const handleChange = (e) => {
+    const { name, value } = e.target;
     setUserData((prevData) => ({
       ...prevData,
-      gender: value,
+      [name]: value,
     }));
+  };
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    setSelectedFile(file);
   };
 
   return (
@@ -147,9 +152,10 @@ function EditUser() {
                   alignItems: "center",
                 }}
               >
-                <Link to={`/users`}>
+                <Link to={`/interest`}>
                   <ArrowBackIosIcon style={{ color: "#4a5568" }} />
                 </Link>
+
                 <Typography
                   variant="h5"
                   style={{
@@ -157,94 +163,82 @@ function EditUser() {
                     fontWeight: "bold",
                     fontFamily: "Arial, sans-serif",
                     color: "#4a5568",
+                    marginLeft: "5px",
                   }}
                 >
-                  เเก้ไขข้อมูล
+                  แก้ไขข้อมูล
                 </Typography>
               </Box>
+
               <Divider />
               <CardContent sx={{ padding: "30px" }}>
                 <form>
-                  <Grid container spacing={2}>
+                  <Grid style={{ marginBottom: "20px" }} container spacing={2}>
                     <Grid item lg={6}>
                       <TextField
-                        id="firstName"
-                        label="Firstname"
-                        variant="outlined"
-                        fullWidth
-                        sx={{ mb: 2 }}
-                        value={userData.firstName || ""}
+                        label="placeAddress"
+                        name="placeaddress"
+                        value={userData.placeaddress || ""}
                         onChange={handleChange}
+                        variant="outlined"
+                        className="input"
                       />
                     </Grid>
                     <Grid item lg={6}>
                       <TextField
-                        id="lastName"
-                        label="Lastname"
-                        variant="outlined"
-                        fullWidth
-                        sx={{ mb: 2 }}
-                        value={userData.lastName || ""}
+                        label="userUid"
+                        name="useruid"
+                        value={userData.useruid || ""}
                         onChange={handleChange}
-                      />
-                    </Grid>
-                  </Grid>
-                  <Grid container spacing={2}>
-                    <Grid item lg={6}>
-                      <TextField
-                        id="contactNumber"
-                        label="Contact Number"
                         variant="outlined"
-                        fullWidth
-                        sx={{ mb: 2 }}
-                        value={userData.contactNumber || ""}
-                        onChange={handleChange}
-                      />
-                    </Grid>
-                    <Grid item lg={6}>
-                      <TextField
-                        id="nickname"
-                        label="Nickname"
-                        variant="outlined"
-                        fullWidth
-                        sx={{ mb: 2 }}
-                        value={userData.nickname || ""}
-                        onChange={handleChange}
+                        className="input"
                       />
                     </Grid>
                   </Grid>
-
-                  <FormControl fullWidth sx={{ mb: 2 }}>
-                    <Grid container spacing={2} alignItems="center">
-                      <Grid item>
-                        <Typography sx={{ mr: 1 }}>Gender : </Typography>
-                      </Grid>
-                      <Grid item>
-                        <RadioGroup
-                          row
-                          name="gender"
-                          value={gender}
-                          onChange={handleGenderChange}
-                        >
-                          <FormControlLabel
-                            value="ชาย"
-                            control={<Radio />}
-                            label="ชาย"
-                          />
-                          <FormControlLabel
-                            value="หญิง"
-                            control={<Radio />}
-                            label="หญิง"
-                          />
-                          <FormControlLabel
-                            value="เพศทางเลือก"
-                            control={<Radio />}
-                            label="อื่นๆ"
-                          />
-                        </RadioGroup>
-                      </Grid>
+                  <Grid style={{ marginBottom: "20px" }} container spacing={2}>
+                    <Grid item lg={6}>
+                      <TextField
+                        label="placeTripid"
+                        name="placetripid"
+                        value={userData.placetripid || ""}
+                        onChange={handleChange}
+                        variant="outlined"
+                        className="input"
+                      />
                     </Grid>
-                  </FormControl>
+                    <Grid item lg={6}>
+                      <TextField
+                        label="placeId"
+                        name="placeid"
+                        value={userData.placeid || ""}
+                        onChange={handleChange}
+                        variant="outlined"
+                        className="input"
+                      />
+                    </Grid>
+                  </Grid>
+                  <Grid style={{ marginBottom: "25px" }} container spacing={2}>
+                    <Grid item lg={6}>
+                      <TextField
+                        label="placeLatitude"
+                        name="placeLatitude"
+                        value={userData.placeLatitude || ""}
+                        onChange={handleChange}
+                        variant="outlined"
+                        className="input"
+                      />
+                    </Grid>
+                    <Grid item lg={6}>
+                      <TextField
+                        label="placeLongitude"
+                        name="placeLongitude"
+                        value={userData.placeLongitude || ""}
+                        onChange={handleChange}
+                        variant="outlined"
+                        className="input"
+                      />
+                    </Grid>
+                  </Grid>
                   <TextField
                     id="upload-file"
                     type="file"
@@ -269,11 +263,11 @@ function EditUser() {
                         component="span"
                         startIcon={<PhotoIcon />}
                       >
-                        เปลี่ยนรูปโปรไฟล์
+                        เปลี่ยนรูปจุดนัดพบ
                       </Button>
                     </InputLabel>
                     <Typography variant="body1" sx={{ marginLeft: "10px" }}>
-                      {profileImage ? profileImage.name : "ไม่ได้เลือกไฟล์"}
+                      {selectedFile ? selectedFile.name : "ไม่ได้เลือกไฟล์"}
                     </Typography>
                   </Box>
                   <Box textAlign="right">
@@ -281,7 +275,7 @@ function EditUser() {
                       color="primary"
                       variant="contained"
                       type="button"
-                      onClick={handleSubmit}
+                      onClick={handleUpdateUser}
                     >
                       บันทึก
                     </Button>
@@ -296,4 +290,4 @@ function EditUser() {
   );
 }
 
-export default EditUser;
+export default EditInterest;

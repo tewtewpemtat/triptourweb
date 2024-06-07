@@ -19,6 +19,7 @@ import ManageAccountsIcon from "@mui/icons-material/ManageAccounts";
 import MapIcon from "@mui/icons-material/Map";
 import TimelineIcon from "@mui/icons-material/Timeline";
 import RoomIcon from '@mui/icons-material/Room';
+import CollectionsBookmarkIcon from '@mui/icons-material/CollectionsBookmark';
 const useStyles = makeStyles((theme) => ({
   sidebar: {
     width: "100",
@@ -114,20 +115,28 @@ function Navbar() {
               <ListItemText primary="ข้อมูลทริป" />
             </ListItem>
           </Link>
-          <Link to="/timelines" className={classes.linkText}>
-            <ListItem button key="ข้อมูลไทมไลน์">
-              <ListItemIcon>
-                <TimelineIcon />
-              </ListItemIcon>
-              <ListItemText primary="ข้อมูลไทมไลน์" />
-            </ListItem>
-          </Link>
           <Link to="/placemeet" className={classes.linkText}>
             <ListItem button key="ข้อมูลจุดนัดพบ">
               <ListItemIcon>
                 <RoomIcon />
               </ListItemIcon>
               <ListItemText primary="ข้อมูลจุดนัดพบ" />
+            </ListItem>
+          </Link>
+          <Link to="/interest" className={classes.linkText}>
+            <ListItem button key="ข้อมูลสิ่งน่าสนใจ">
+              <ListItemIcon>
+                <CollectionsBookmarkIcon />
+              </ListItemIcon>
+              <ListItemText primary="ข้อมูลสิ่งน่าสนใจ" />
+            </ListItem>
+          </Link>
+          <Link to="/timelines" className={classes.linkText}>
+            <ListItem button key="ข้อมูลไทมไลน์">
+              <ListItemIcon>
+                <TimelineIcon />
+              </ListItemIcon>
+              <ListItemText primary="ข้อมูลไทมไลน์" />
             </ListItem>
           </Link>
           <Link to="/manage" className={classes.linkText}>
