@@ -17,7 +17,8 @@ import FlightIcon from "@material-ui/icons/Flight";
 import ExitToAppIcon from "@material-ui/icons/ExitToApp";
 import ManageAccountsIcon from "@mui/icons-material/ManageAccounts";
 import MapIcon from "@mui/icons-material/Map";
-
+import TimelineIcon from "@mui/icons-material/Timeline";
+import RoomIcon from '@mui/icons-material/Room';
 const useStyles = makeStyles((theme) => ({
   sidebar: {
     width: "100",
@@ -28,7 +29,7 @@ const useStyles = makeStyles((theme) => ({
     position: "fixed",
     top: 0,
     left: 0,
-    height: "100vh", // ทำให้ sidebar เต็มความสูงของหน้าจอ
+    height: "100vh",
   },
   linkText: {
     textDecoration: "none",
@@ -111,6 +112,22 @@ function Navbar() {
                 <MapIcon />
               </ListItemIcon>
               <ListItemText primary="ข้อมูลทริป" />
+            </ListItem>
+          </Link>
+          <Link to="/timelines" className={classes.linkText}>
+            <ListItem button key="ข้อมูลไทมไลน์">
+              <ListItemIcon>
+                <TimelineIcon />
+              </ListItemIcon>
+              <ListItemText primary="ข้อมูลไทมไลน์" />
+            </ListItem>
+          </Link>
+          <Link to="/placemeet" className={classes.linkText}>
+            <ListItem button key="ข้อมูลจุดนัดพบ">
+              <ListItemIcon>
+                <RoomIcon />
+              </ListItemIcon>
+              <ListItemText primary="ข้อมูลจุดนัดพบ" />
             </ListItem>
           </Link>
           <Link to="/manage" className={classes.linkText}>

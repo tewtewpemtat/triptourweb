@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { firestore } from "../firebase"; 
 import { collection, getDocs, doc, deleteDoc } from "firebase/firestore"; 
-import "./editplace.css"; 
+import "./showplacemeet.css"; 
 import {
   BrowserRouter as Router,
   Routes,
@@ -51,7 +51,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function ShowPlace() {
+function ShowPlaceMeet() {
   const { userId } = useParams();
   const [tripData, setUserData] = useState([]);
   const navigate = useNavigate();
@@ -67,14 +67,9 @@ function ShowPlace() {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const usersRef = collection(firestore, "places");
-        const querySnapshot = await getDocs(
-          query(
-            collection(firestore, "places"),
-            where("placetripid", "==", userId)
-          )
-        );
-        const userDataArray = querySnapshot.docs.map((doc) => {
+        const usersRef = collection(firestore, "placemeet");
+        const usersSnapshot = await getDocs(usersRef);
+        const userDataArray = usersSnapshot.docs.map((doc) => {
           const data = doc.data();
           data.uid = doc.id; 
           return data;
@@ -92,7 +87,7 @@ function ShowPlace() {
     const confirmed = window.confirm("โปรดยืนยันการลบข้อมูล");
     if (confirmed) {
       try {
-        await deleteDoc(doc(firestore, "places", uid));
+        await deleteDoc(doc(firestore, "placemeet", uid));
         const updatedUserData = tripData.filter((user) => user.uid !== uid);
         setUserData(updatedUserData);
         alert("ลบข้อมูลสำเร็จ");
@@ -135,7 +130,7 @@ function ShowPlace() {
                           color: "#4a5568",
                         }}
                       >
-                        NAME
+                        PLACEID
                       </Typography>
                     </TableCell>
                     <TableCell style={{ backgroundColor: "transparent" }}>
@@ -148,7 +143,7 @@ function ShowPlace() {
                           color: "#4a5568",
                         }}
                       >
-                        ADDRESS
+                        PLACENAME
                       </Typography>
                     </TableCell>
                     <TableCell style={{ backgroundColor: "transparent" }}>
@@ -161,7 +156,7 @@ function ShowPlace() {
                           color: "#4a5568",
                         }}
                       >
-                        PROVINCE
+                        PLACEADDRESS
                       </Typography>
                     </TableCell>
                     <TableCell style={{ backgroundColor: "transparent" }}>
@@ -174,7 +169,7 @@ function ShowPlace() {
                           color: "#4a5568",
                         }}
                       >
-                        TRIPID
+                       PLACETRIPID
                       </Typography>
                     </TableCell>
                     <TableCell style={{ backgroundColor: "transparent" }}>
@@ -213,98 +208,7 @@ function ShowPlace() {
                           color: "#4a5568",
                         }}
                       >
-                        PLACESTART
-                      </Typography>
-                    </TableCell>
-                    <TableCell style={{ backgroundColor: "transparent" }}>
-                      <Typography
-                        variant="subtitle1"
-                        style={{
-                          fontSize: "12px",
-                          fontWeight: "bold",
-                          fontFamily: "Arial, sans-serif",
-                          color: "#4a5568",
-                        }}
-                      >
-                        TIMESTART
-                      </Typography>
-                    </TableCell>
-                    <TableCell style={{ backgroundColor: "transparent" }}>
-                      <Typography
-                        variant="subtitle1"
-                        style={{
-                          fontSize: "12px",
-                          fontWeight: "bold",
-                          fontFamily: "Arial, sans-serif",
-                          color: "#4a5568",
-                        }}
-                      >
-                        TIMEEND
-                      </Typography>
-                    </TableCell>
-                    <TableCell style={{ backgroundColor: "transparent" }}>
-                      <Typography
-                        variant="subtitle1"
-                        style={{
-                          fontSize: "12px",
-                          fontWeight: "bold",
-                          fontFamily: "Arial, sans-serif",
-                          color: "#4a5568",
-                        }}
-                      >
-                        USERID
-                      </Typography>
-                    </TableCell>
-                    <TableCell style={{ backgroundColor: "transparent" }}>
-                      <Typography
-                        variant="subtitle1"
-                        style={{
-                          fontSize: "12px",
-                          fontWeight: "bold",
-                          fontFamily: "Arial, sans-serif",
-                          color: "#4a5568",
-                        }}
-                      >
-                        PLACEADD
-                      </Typography>
-                    </TableCell>
-                    <TableCell style={{ backgroundColor: "transparent" }}>
-                      <Typography
-                        variant="subtitle1"
-                        style={{
-                          fontSize: "12px",
-                          fontWeight: "bold",
-                          fontFamily: "Arial, sans-serif",
-                          color: "#4a5568",
-                        }}
-                      >
-                        PLACERUN
-                      </Typography>
-                    </TableCell>
-                    <TableCell style={{ backgroundColor: "transparent" }}>
-                      <Typography
-                        variant="subtitle1"
-                        style={{
-                          fontSize: "12px",
-                          fontWeight: "bold",
-                          fontFamily: "Arial, sans-serif",
-                          color: "#4a5568",
-                        }}
-                      >
-                        STATUS
-                      </Typography>
-                    </TableCell>
-                    <TableCell style={{ backgroundColor: "transparent" }}>
-                      <Typography
-                        variant="subtitle1"
-                        style={{
-                          fontSize: "12px",
-                          fontWeight: "bold",
-                          fontFamily: "Arial, sans-serif",
-                          color: "#4a5568",
-                        }}
-                      >
-                        WHOGO
+                        USERUID
                       </Typography>
                     </TableCell>
                     <TableCell style={{ backgroundColor: "transparent" }}>
@@ -340,43 +244,13 @@ function ShowPlace() {
                     {tripData.map((user, index) => (
                       <TableRow key={index}>
                         <TableCell>{user.uid || "N/A"}</TableCell>
+                        <TableCell>{user.placeid || "N/A"}</TableCell>
                         <TableCell>{user.placename || "N/A"}</TableCell>
                         <TableCell>{user.placeaddress || "N/A"}</TableCell>
-                        <TableCell>{user.placeprovince || "N/A"}</TableCell>
                         <TableCell>{user.placetripid || "N/A"}</TableCell>
                         <TableCell>{user.placeLatitude || "N/A"}</TableCell>
                         <TableCell>{user.placeLongitude || "N/A"}</TableCell>
-                        <TableCell>
-                          Latitude: {user.placestart.latitude ?? "N/A"},
-                          Longitude: {user.placestart.longitude ?? "N/A"}
-                        </TableCell>
-                        <TableCell>
-                          {user.placetimestart
-                            ? `${user.placetimestart
-                                .toDate()
-                                .toLocaleDateString(
-                                  "th-TH"
-                                )} ${user.placetimestart
-                                .toDate()
-                                .toLocaleTimeString("th-TH")}`
-                            : "N/A"}
-                        </TableCell>
-                        <TableCell>
-                          {user.placetimeend
-                            ? `${user.placetimeend
-                                .toDate()
-                                .toLocaleDateString(
-                                  "th-TH"
-                                )} ${user.placetimeend
-                                .toDate()
-                                .toLocaleTimeString("th-TH")}`
-                            : "N/A"}
-                        </TableCell>
                         <TableCell>{user.useruid || "N/A"}</TableCell>
-                        <TableCell>{user.placeadd || "N/A"}</TableCell>
-                        <TableCell>{user.placerun || "N/A"}</TableCell>
-                        <TableCell>{user.placestatus || "N/A"}</TableCell>
-                        <TableCell>{user.placewhogo.length || "N/A"}</TableCell>
                         <TableCell>
                           {user.placepicUrl ? (
                             <img
@@ -393,7 +267,7 @@ function ShowPlace() {
                           )}
                         </TableCell>
                         <TableCell>
-                          <Link to={`/editplace/${userId}/${user.uid}`}>
+                          <Link to={`/editplacemeet/${user.placetripid}/${user.uid}`}>
                             <IconButton>
                               <CreateIcon />
                             </IconButton>
@@ -417,4 +291,4 @@ function ShowPlace() {
   );
 }
 
-export default ShowPlace;
+export default ShowPlaceMeet;

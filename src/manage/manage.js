@@ -21,6 +21,12 @@ import {
   Button,
   Card,
   CardContent,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  TextField,
 } from "@mui/material";
 import Navbar from "../navbar";
 import { Link, useNavigate } from "react-router-dom";
@@ -50,6 +56,9 @@ const useStyles = makeStyles((theme) => ({
 }));
 function Manage() {
   const [userData, setUserData] = useState([]);
+  const [open, setOpen] = useState(false);
+  const [password, setPassword] = useState("");
+  const [selectedUid, setSelectedUid] = useState(null);
   const navigate = useNavigate();
   const classes = useStyles();
 
@@ -82,22 +91,35 @@ function Manage() {
   const handleAddUser = () => {
     navigate("/manage/add");
   };
-
-  const handleDeleteUser = async (uid) => {
+  const handleOpenDialog = (uid) => {
     if (uid === "Syo5nn3QB0RxgRTwSN34ImkMMKp1") {
       alert("ไม่สามารถลบข้อมูลนี้ได้");
       return;
     }
+    setSelectedUid(uid);
+    setOpen(true);
+  };
 
-    const confirmed = window.confirm("โปรดยืนยันการลบข้อมูล");
-    if (confirmed) {
-      try {
-        const currentEmail = localStorage.getItem("email");
+  const handleCloseDialog = () => {
+    setOpen(false);
+    setPassword("");
+    setSelectedUid(null);
+  };
 
-        const adminDocRef = doc(firestore, "admins", uid);
-        const adminDocSnapshot = await getDoc(adminDocRef);
-        if (adminDocSnapshot.exists()) {
-          const adminData = adminDocSnapshot.data();
+  const handleConfirmDelete = async () => {
+    if (!password) {
+      alert("โปรดใส่รหัสผ่าน");
+      return;
+    }
+
+    try {
+      const currentEmail = localStorage.getItem("email");
+
+      const adminDocRef = doc(firestore, "admins", selectedUid);
+      const adminDocSnapshot = await getDoc(adminDocRef);
+      if (adminDocSnapshot.exists()) {
+        const adminData = adminDocSnapshot.data();
+        if (adminData.password === password) {
           if (currentEmail === adminData.email) {
             await deleteDoc(adminDocRef);
             localStorage.removeItem("authToken");
@@ -105,19 +127,22 @@ function Manage() {
             alert("ลบข้อมูลสำเร็จ");
             navigate("/login");
           } else {
-            await deleteDoc(doc(firestore, "admins", uid));
+            await deleteDoc(doc(firestore, "admins", selectedUid));
             alert("ลบข้อมูลสำเร็จ");
             window.location.reload();
           }
         } else {
-          alert("ไม่พบข้อมูลผู้ใช้");
+          alert("รหัสผ่านผิดพลาด");
         }
-      } catch (error) {
-        console.error("Error deleting user: ", error);
+      } else {
+        alert("ไม่พบข้อมูลผู้ใช้");
       }
+    } catch (error) {
+      console.error("Error deleting user: ", error);
     }
-  };
 
+    handleCloseDialog();
+  };
   return (
     <div>
       <Navbar />
@@ -177,7 +202,7 @@ function Manage() {
                         <TableCell>{user.email || "N/A"}</TableCell>
                         <TableCell>
                           <IconButton
-                            onClick={() => handleDeleteUser(user.uid)}
+                            onClick={() => handleOpenDialog(user.uid)}
                           >
                             <DeleteIcon />
                           </IconButton>
@@ -202,6 +227,27 @@ function Manage() {
           </CardContent>
         </Card>
       </Box>
+      <Dialog open={open} onClose={handleCloseDialog}>
+        <DialogTitle>โปรดยืนยันการลบข้อมูล</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            โปรดใส่รหัสผ่านเพื่อยืนยันการลบข้อมูล
+          </DialogContentText>
+          <TextField
+            autoFocus
+            margin="dense"
+            type="password"
+            fullWidth
+            variant="standard"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseDialog}>ยกเลิก</Button>
+          <Button onClick={handleConfirmDelete}>ยืนยัน</Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 }

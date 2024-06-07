@@ -2,14 +2,14 @@ import React, { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { firestore } from "../firebase";
-import DatePicker from "react-datepicker"; // Import DatePicker
-import "react-datepicker/dist/react-datepicker.css"; // Import DatePicker CSS
-import "./editplace.css"; // Import CSS file for styling
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { storage } from "../firebase"; // import Firebase storage instance
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import "./editplace.css";
+import { ref, uploadBytes, getDownloadURL ,deleteObject } from "firebase/storage";
+import { storage } from "../firebase";
 import Navbar from "../navbar";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
-import PhotoIcon from '@mui/icons-material/Photo';
+import PhotoIcon from "@mui/icons-material/Photo";
 import {
   Card,
   InputLabel,
@@ -36,12 +36,11 @@ function EditPlace() {
   const [placestatus, setplaceStatus] = useState("");
   const [placerun, setrunStatus] = useState("");
   const [placeadd, setaddStatus] = useState("");
-  const [placetimestart, setplacetimestart] = useState(new Date()); // State for trip start date
-  const [placetimeend, setplacetimeend] = useState(new Date()); // State for trip end date
+  const [placetimestart, setplacetimestart] = useState(new Date());
+  const [placetimeend, setplacetimeend] = useState(new Date());
   const [placestart, setPlaceStart] = useState({ latitude: 0, longitude: 0 });
   const navigate = useNavigate();
-  const [selectedFile, setSelectedFile] = useState(null); // State to store the selected file
-
+  const [selectedFile, setSelectedFile] = useState(null);
 
   useEffect(() => {
     const authToken = localStorage.getItem("authToken");
@@ -68,7 +67,7 @@ function EditPlace() {
               ? userSnapshot.data().placestart.longitude || 0
               : 0,
           });
-          // Set trip start and end dates if available
+
           if (userSnapshot.data().placetimestart) {
             setplacetimestart(
               new Date(userSnapshot.data().placetimestart.seconds * 1000)
@@ -97,7 +96,6 @@ function EditPlace() {
       [name]: value,
     }));
 
-    // Update userData with the new placestart value
     setUserData((prevUserData) => ({
       ...prevUserData,
       placestart: {
@@ -106,19 +104,28 @@ function EditPlace() {
       },
     }));
   };
-
+  const deleteOldImage = async (url) => {
+    try {
+      const fileRef = ref(storage, url);
+      await deleteObject(fileRef);
+      console.log("Old image deleted successfully!");
+    } catch (error) {
+      console.error("Error deleting old image:", error);
+    }
+  };
   const handleUpdateUser = async () => {
     try {
+      let updatedUserData = { ...userData };
+
       if (selectedFile) {
-        const profileLink = await uploadProfileImageToStorage(selectedFile,userId);
-        setUserData((prevData) => ({
-          ...prevData,
-          placepicUrl: profileLink,
-        }));
-        console.log(profileLink);
+        if (userData.placepicUrl) {
+          await deleteOldImage(userData.placepicUrl);
+        }
+        const profileLink = await uploadProfileImageToStorage(selectedFile, userId);
+        updatedUserData.placepicUrl = profileLink;
       }
       const userDoc = doc(firestore, "places", userId);
-      await updateDoc(userDoc, userData);
+      await updateDoc(userDoc, updatedUserData);
       alert("แก้ไขข้อมูลสำเร็จ");
       console.log("User updated successfully!");
     } catch (error) {
@@ -133,7 +140,7 @@ function EditPlace() {
     return randomNumber.toString();
   }
 
-  const uploadProfileImageToStorage = async (imageFile,userId) => {
+  const uploadProfileImageToStorage = async (imageFile, userId) => {
     try {
       const randomImg = generateRandomNumber();
       const filePath = `trip/places/profilepicedit/${placeId}/${userData.placename}${randomImg}.jpg`;
@@ -141,14 +148,13 @@ function EditPlace() {
       await uploadBytes(storageRef, imageFile);
       console.log("Image uploaded successfully!");
 
-      // Generate the download URL
       const downloadURL = await getDownloadURL(storageRef);
 
       console.log("Profile image URL:", downloadURL);
-      return downloadURL; // Return the download URL of the image
+      return downloadURL;
     } catch (error) {
       console.error("Error uploading image:", error);
-      return null; // Return null in case of error
+      return null;
     }
   };
 
@@ -214,7 +220,7 @@ function EditPlace() {
                     fontWeight: "bold",
                     fontFamily: "Arial, sans-serif",
                     color: "#4a5568",
-                    marginLeft: "5px", // เพิ่มการเยื้องเพื่อให้ข้อความอยู่ในบรรทัดเดียวกับไอคอน
+                    marginLeft: "5px",
                   }}
                 >
                   แก้ไขข้อมูล
@@ -529,23 +535,26 @@ function EditPlace() {
                     type="file"
                     inputProps={{ accept: ".jpg, .jpeg, .png" }}
                     onChange={handleImageChange}
-                    style={{ display: "none" }} // Hide the input field
+                    style={{ display: "none" }}
                   />
                   <Box
                     sx={{
                       display: "flex",
                       alignItems: "center",
-                
+
                       marginBottom: "20px",
                     }}
                   >
-                    <InputLabel htmlFor="upload-file" sx={{ cursor: "pointer" }}>
+                    <InputLabel
+                      htmlFor="upload-file"
+                      sx={{ cursor: "pointer" }}
+                    >
                       <Button
                         variant="contained"
                         component="span"
                         startIcon={<PhotoIcon />}
                       >
-                        เปลี่ยนรูปสถานที่  
+                        เปลี่ยนรูปสถานที่
                       </Button>
                     </InputLabel>
                     <Typography variant="body1" sx={{ marginLeft: "10px" }}>

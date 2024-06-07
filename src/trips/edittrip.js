@@ -3,12 +3,12 @@ import { useParams } from "react-router-dom";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { firestore } from "../firebase";
 import { Link, useNavigate } from "react-router-dom";
-import DatePicker from "react-datepicker"; // Import DatePicker
-import "react-datepicker/dist/react-datepicker.css"; // Import DatePicker CSS
-import "./edittrip.css"; // Import CSS file for styling
-import { ref, uploadBytes } from "firebase/storage";
+import DatePicker from "react-datepicker"; 
+import "react-datepicker/dist/react-datepicker.css"; 
+import "./edittrip.css"; 
+import { ref, uploadBytes ,deleteObject ,getDownloadURL} from "firebase/storage";
 import Navbar from "../navbar";
-import { storage } from "../firebase"; // import Firebase storage instance
+import { storage } from "../firebase"; 
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import PhotoIcon from '@mui/icons-material/Photo';
 import {
@@ -35,8 +35,8 @@ function EditTrip() {
   const [userData, setUserData] = useState({});
   const [profileImage, setProfileImage] = useState(null);
   const [tripStatus, settripStatus] = useState("");
-  const [tripStartDate, setTripStartDate] = useState(new Date()); // State for trip start date
-  const [tripEndDate, setTripEndDate] = useState(new Date()); // State for trip end date
+  const [tripStartDate, setTripStartDate] = useState(new Date()); 
+  const [tripEndDate, setTripEndDate] = useState(new Date()); 
   const [tripJoin, setTripJoin] = useState([]);
   const [tripLimit, setTripLimit] = useState([]);
   const navigate = useNavigate();
@@ -72,20 +72,28 @@ function EditTrip() {
     fetchUserData();
   }, [userId]);
 
+  const deleteOldImage = async (url) => {
+    try {
+      const fileRef = ref(storage, url);
+      await deleteObject(fileRef);
+      console.log("Old image deleted successfully!");
+    } catch (error) {
+      console.error("Error deleting old image:", error);
+    }
+  };
   const handleUpdateUser = async () => {
     try {
+      let updatedUserData = { ...userData };
+
       if (profileImage) {
-        const profileImageUrl = await uploadProfileImageToStorage(
-          profileImage,
-          userId
-        );
-        setUserData((prevData) => ({
-          ...prevData,
-          tripProfileUrl: profileImageUrl,
-        }));
+        if (userData.tripProfileUrl) {
+          await deleteOldImage(userData.tripProfileUrl);
+        }
+        const profileLink = await uploadProfileImageToStorage(profileImage, userId);
+        updatedUserData.tripProfileUrl = profileLink;
       }
       const userDoc = doc(firestore, "trips", userId);
-      await updateDoc(userDoc, userData);
+      await updateDoc(userDoc, updatedUserData);
       alert("แก้ไขข้อมูลสำเร็จ");
       console.log("User updated successfully!");
     } catch (error) {
@@ -95,22 +103,19 @@ function EditTrip() {
 
   const uploadProfileImageToStorage = async (imageFile, userId) => {
     try {
-      const storageRef = ref(storage, `trip/profiletrip/${userId}.jpg`);
+      
+      const filePath = `trip/profiletrip/${userId}.jpg`;
+      const storageRef = ref(storage, filePath);
       await uploadBytes(storageRef, imageFile);
       console.log("Image uploaded successfully!");
-      // สร้าง URL ของรูปภาพที่อัปโหลด
-      const profileImageUrl = `https://firebasestorage.googleapis.com/v0/b/${
-        storage.app.options.storageBucket
-      }/o/${encodeURIComponent(
-        "trip/profiletrip/" + userId + ".jpg"
-      )}?alt=media`;
 
-      console.log("Profile image URL:", profileImageUrl);
+      const downloadURL = await getDownloadURL(storageRef);
 
-      return profileImageUrl; // ส่งกลับ URL ของรูปภาพ
+      console.log("Profile image URL:", downloadURL);
+      return downloadURL;
     } catch (error) {
       console.error("Error uploading image:", error);
-      return null; // หากเกิดข้อผิดพลาดในการอัปโหลด ส่งค่า null กลับไป
+      return null;
     }
   };
 
@@ -155,7 +160,7 @@ function EditTrip() {
     setTripLimit(value);
     setUserData((prevData) => ({
       ...prevData,
-      tripLimit: value, // Set tripLimit in userData
+      tripLimit: value, 
     }));
   };
 
@@ -403,7 +408,7 @@ function EditTrip() {
                     type="file"
                     inputProps={{ accept: ".jpg, .jpeg, .png" }}
                     onChange={handleImageChange}
-                    style={{ display: "none" }} // Hide the input field
+                    style={{ display: "none" }} 
                   />
                   <Box
                     sx={{

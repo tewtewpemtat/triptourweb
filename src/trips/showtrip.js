@@ -1,8 +1,7 @@
-// TablePage.js
 import React, { useEffect, useState } from "react";
-import { firestore } from "../firebase"; // เรียกใช้ firestore
-import { collection, getDocs, doc, deleteDoc } from "firebase/firestore"; // เรียกใช้งาน collection, getDocs, doc และ deleteDoc จาก Firebase Firestore
-import "./showtrip.css"; // Corrected CSS import path
+import { firestore } from "../firebase";
+import { collection, getDocs, doc, deleteDoc } from "firebase/firestore";
+import "./showtrip.css";
 import {
   BrowserRouter as Router,
   Routes,
@@ -11,11 +10,14 @@ import {
   useNavigate,
 } from "react-router-dom";
 import Navbar from "../navbar";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 import {
   Typography,
   Box,
   Chip,
   Table,
+  TextField,
   TableBody,
   TableCell,
   TableContainer,
@@ -49,9 +51,13 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 function ShowTrip() {
-  const [tripData, setUserData] = useState([]);
+  const [tripData, setTripData] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
   const navigate = useNavigate();
   const classes = useStyles();
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
+
   useEffect(() => {
     const authToken = localStorage.getItem("authToken");
     if (!authToken) {
@@ -60,23 +66,46 @@ function ShowTrip() {
   }, [navigate]);
 
   useEffect(() => {
-    const fetchUserData = async () => {
+    const fetchTripData = async () => {
       try {
-        const usersRef = collection(firestore, "trips");
-        const usersSnapshot = await getDocs(usersRef);
-        const userDataArray = usersSnapshot.docs.map((doc) => {
+        const tripsRef = collection(firestore, "trips");
+        const tripsSnapshot = await getDocs(tripsRef);
+        const tripDataArray = tripsSnapshot.docs.map((doc) => {
           const data = doc.data();
-          data.uid = doc.id; // เพิ่ม Document ID ลงในข้อมูลผู้ใช้
+          data.uid = doc.id;
           return data;
         });
-        setUserData(userDataArray);
+        setTripData(tripDataArray);
       } catch (error) {
-        console.error("Error fetching user data: ", error);
+        console.error("Error fetching trip data: ", error);
       }
     };
 
-    fetchUserData();
+    fetchTripData();
   }, []);
+
+  const handleSearch = (event) => {
+    setSearchTerm(event.target.value.toLowerCase());
+  };
+
+  const filteredTrips = tripData.filter((trip) => {
+    return (
+      trip.uid?.toLowerCase().includes(searchTerm) ||
+      trip.tripCreate?.toLowerCase().includes(searchTerm) ||
+      trip.tripName?.toLowerCase().includes(searchTerm) ||
+      trip.tripStartDate
+        ?.toDate()
+        .toLocaleDateString("th-TH")
+        .toLowerCase()
+        .includes(searchTerm) ||
+      trip.tripEndDate
+        ?.toDate()
+        .toLocaleDateString("th-TH")
+        .toLowerCase()
+        .includes(searchTerm) ||
+      trip.tripStatus?.toLowerCase().includes(searchTerm)
+    );
+  });
 
   const handleDeleteUser = async (uid) => {
     const confirmed = window.confirm("โปรดยืนยันการลบข้อมูล");
@@ -84,7 +113,7 @@ function ShowTrip() {
       try {
         await deleteDoc(doc(firestore, "trips", uid));
         const updatedUserData = tripData.filter((user) => user.uid !== uid);
-        setUserData(updatedUserData);
+        setTripData(updatedUserData);
         alert("ลบข้อมูลสำเร็จ");
       } catch (error) {
         console.error("Error deleting user: ", error);
@@ -98,6 +127,86 @@ function ShowTrip() {
       <Box sx={{ marginLeft: 25 }}>
         <Card variant="outlined">
           <CardContent>
+            <Box
+              sx={{
+                display: "grid",
+                gridTemplateColumns: "repeat(4, 1fr)",
+                gridColumnGap: 10,
+                marginLeft: "5px",
+                marginBottom: "10px",
+              }}
+            >
+              <TextField
+                label="ค้นหา ID"
+                variant="outlined"
+                name="uid"
+                fullWidth
+                margin="normal"
+                onChange={handleSearch}
+              />
+              <TextField
+                label="ค้นหา TripCreate"
+                variant="outlined"
+                name="tripCreate"
+                fullWidth
+                margin="normal"
+                onChange={handleSearch}
+              />
+              <TextField
+                label="ค้นหา Name"
+                variant="outlined"
+                name="tripName"
+                fullWidth
+                margin="normal"
+                onChange={handleSearch}
+              />
+              <TextField
+                label="ค้นหา Status"
+                variant="outlined"
+                name="tripStatus"
+                fullWidth
+                margin="normal"
+                onChange={handleSearch}
+              />
+              <DatePicker
+                id="tripStart"
+                selected={startDate}
+                onChange={(date) => setStartDate(date)}
+                showTimeSelect
+                timeFormat="HH:mm"
+                timeIntervals={15}
+                timeCaption="Time"
+                dateFormat="dd/MM/yyyy HH:mm"
+                className="input"
+                customInput={
+                  <TextField
+                    variant="outlined"
+                    fullWidth
+                    label="Start Date" 
+                    InputLabelProps={{ shrink: true }} 
+                  />
+                }
+              />
+              <DatePicker
+                id="tripEnd"
+                selected={endDate}
+                onChange={(date) => setEndDate(date)}
+                showTimeSelect
+                timeFormat="HH:mm"
+                timeIntervals={15}
+                timeCaption="Time"
+                dateFormat="dd/MM/yyyy HH:mm"
+                className="input"
+                customInput={
+                  <TextField
+                    variant="outlined"
+                    fullWidth
+                    label="End Date" 
+                    InputLabelProps={{ shrink: true }} 
+                  />
+                }
+              />
+            </Box>
             <Box sx={{ overflow: { xs: "auto", sm: "unset" } }}>
               <Table aria-label="simple table" className={classes.table}>
                 <TableHead>
@@ -218,7 +327,7 @@ function ShowTrip() {
                       TRIPPROFILE
                     </Typography>
                   </TableCell>
-                  <TableCell style={{ backgroundColor: "transparent"}}>
+                  <TableCell style={{ backgroundColor: "transparent" }}>
                     <Typography
                       variant="subtitle1"
                       style={{
@@ -227,15 +336,15 @@ function ShowTrip() {
                         fontFamily: "Arial, sans-serif",
                         color: "#4a5568",
                         width: "90px",
-                        paddingLeft: "20px"
+                        paddingLeft: "20px",
                       }}
                     >
-                     ACTION
+                      ACTION
                     </Typography>
                   </TableCell>
                 </TableHead>
                 <TableBody>
-                  {tripData.map((user, index) => (
+                  {filteredTrips.map((user, index) => (
                     <TableRow key={index}>
                       <TableCell>{user.uid || "N/A"}</TableCell>
                       <TableCell>{user.tripCreate || "N/A"}</TableCell>
