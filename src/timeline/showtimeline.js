@@ -81,13 +81,25 @@ function ShowTimeLine() {
     fetchUserData();
   }, []);
 
+  const isDate = (value) => {
+    return value instanceof Date && !isNaN(value);
+  };
+  const getDateTimeString = (firebaseTimestamp) => {
+    if (!firebaseTimestamp) return "N/A";
+    const dateObj = firebaseTimestamp.toDate();
+    return `${dateObj.toLocaleDateString("th-TH")} ${dateObj.toLocaleTimeString(
+      "th-TH"
+    )}`;
+  };
+
   const handleSearch = (event) => {
     setSearchTerm(event.target.value.toLowerCase());
   };
 
   const filteredTrips = userData.filter((place) => {
     const placeStartDate = place.intime?.toDate();
-    const placeEndDate = place.outtime?.toDate();
+    const placeEndDate =
+      place.outtime && place.outtime.toDate ? place.outtime.toDate() : null;
     const matchesSearchTerm =
       place.uid?.toLowerCase().includes(searchTerm) ||
       place.placeid?.toLowerCase().includes(searchTerm) ||
@@ -361,7 +373,10 @@ function ShowTimeLine() {
                           : "N/A"}
                       </TableCell>
                       <TableCell>
-                        {user.outtime
+                        {typeof user.outtime === "string" &&
+                        user.outtime === "Wait"
+                          ? "Wait"
+                          : user.outtime
                           ? `${user.outtime
                               .toDate()
                               .toLocaleDateString("th-TH")} ${user.outtime
