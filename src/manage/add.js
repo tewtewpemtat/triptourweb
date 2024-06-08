@@ -5,6 +5,7 @@ import { firestore } from "../firebase";
 import { ref, uploadBytes } from "firebase/storage";
 import Navbar from "../navbar";
 import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+import bcrypt from "bcryptjs-react";
 import {
   collection,
   addDoc,
@@ -61,6 +62,13 @@ function Add() {
       setEmailError(false);
     }
   };
+ const hashPassword = async (password) => {
+  const saltRounds = 10;
+  
+  const hashedPassword = await bcrypt.hash(password, saltRounds);
+  
+  return hashedPassword;
+}
 
   const handlePasswordChange = (e) => {
     setPassword(e.target.value);
@@ -99,10 +107,12 @@ function Add() {
         return;
       }
 
-      
+      const hashedPassword = await hashPassword(password);
+
       const docRef = await addDoc(collection(firestore, "admins"), {
         email,
-        password,
+        password: hashedPassword, 
+        level : 'normal'
       });
       alert("เพิ่มข้อมูลเสร็จสิ้น");
       navigate("/manage");

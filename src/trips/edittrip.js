@@ -227,7 +227,6 @@ function EditTrip() {
                 <form>
                   <Grid style={{ marginBottom: "5px" }} container spacing={2}>
                     <Grid item lg={6}>
-                      {/* ตำแหน่ง TextField ที่ 1 */}
                       <TextField
                         id="tripCreate"
                         label="tripCreate"
@@ -239,7 +238,6 @@ function EditTrip() {
                       />
                     </Grid>
                     <Grid item lg={6}>
-                      {/* ตำแหน่ง TextField ที่ 2 */}
                       <TextField
                         id="tripName"
                         label="tripName"

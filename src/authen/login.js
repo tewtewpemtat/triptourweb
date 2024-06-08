@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth, firestore, getDoc, doc } from "../firebase";
-import { useNavigate, Navigate } from "react-router-dom";
-import { onAuthStateChanged } from "firebase/auth";
-import "./login.css";
+import { useNavigate } from "react-router-dom";
 import { collection, query, where, getDocs } from "firebase/firestore";
+import bcrypt from "bcryptjs-react";
+import { firestore } from "../firebase";
+import "./login.css";
+
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -12,22 +12,31 @@ function Login() {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    e.preventDefault();
     try {
       const adminsRef = collection(firestore, "admins");
       const q = query(adminsRef, where("email", "==", email));
       const querySnapshot = await getDocs(q);
 
       if (!querySnapshot.empty) {
-        querySnapshot.forEach((doc) => {
+        let loginSuccessful = false;
+        querySnapshot.forEach(async (doc) => {
           const adminData = doc.data();
-          if (adminData.password === password) {
-            localStorage.setItem("authToken", email);
-            localStorage.setItem("email", email);
-            navigate("/users");
-            alert("เข้าสู่ระบบสำเร็จ");
-          } else {
-            alert("รหัสผ่านไม่ถูกต้อง");
+          const hashedPassword = adminData.password;
+
+          if (hashedPassword) {
+            const passwordMatch = await bcrypt.compare(
+              password,
+              hashedPassword
+            );
+            if (passwordMatch) {
+              localStorage.setItem("authToken", email);
+              localStorage.setItem("email", email);
+              navigate("/users");
+              alert("เข้าสู่ระบบสำเร็จ");
+              loginSuccessful = true;
+            } else {
+              alert("รหัสผ่านไม่ถูกต้อง");
+            }
           }
         });
       } else {
@@ -38,6 +47,7 @@ function Login() {
       alert("เกิดข้อผิดพลาดขณะเข้าสู่ระบบ");
     }
   };
+
   useEffect(() => {
     const authToken = localStorage.getItem("authToken");
     if (authToken) {

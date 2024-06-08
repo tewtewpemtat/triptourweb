@@ -34,7 +34,8 @@ import CreateIcon from "@mui/icons-material/Create";
 import DeleteIcon from "@mui/icons-material/Delete";
 import IconButton from "@mui/material/IconButton";
 import { makeStyles } from "@material-ui/core/styles";
-import { margins } from '../styles/margin'
+import { margins } from "../styles/margin";
+import bcrypt from "bcryptjs-react";
 const useStyles = makeStyles((theme) => ({
   table: {
     borderCollapse: "collapse",
@@ -61,6 +62,7 @@ function Manage() {
   const [selectedUid, setSelectedUid] = useState(null);
   const navigate = useNavigate();
   const classes = useStyles();
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     const authToken = localStorage.getItem("authToken");
@@ -87,14 +89,29 @@ function Manage() {
 
     fetchUserData();
   }, []);
+  const handleSearch = (event) => {
+    setSearchTerm(event.target.value.toLowerCase());
+  };
 
+  const filteredTrips = userData.filter((user) => {
+    const matchesSearchTerm =
+      user.uid?.toLowerCase().includes(searchTerm) ||
+      user.email?.toLowerCase().includes(searchTerm);
+
+    return matchesSearchTerm;
+  });
   const handleAddUser = () => {
     navigate("/manage/add");
   };
-  const handleOpenDialog = (uid) => {
-    if (uid === "Syo5nn3QB0RxgRTwSN34ImkMMKp1") {
-      alert("ไม่สามารถลบข้อมูลนี้ได้");
-      return;
+  const handleOpenDialog = async (uid) => {
+    const adminDocRef = doc(firestore, "admins", uid);
+    const adminDocSnapshot = await getDoc(adminDocRef);
+    if (adminDocSnapshot.exists()) {
+      const adminData = adminDocSnapshot.data();
+      if (adminData.level === "high") {
+        alert("ไม่สามารถลบข้อมูลนี้ได้");
+        return;
+      }
     }
     setSelectedUid(uid);
     setOpen(true);
@@ -119,7 +136,11 @@ function Manage() {
       const adminDocSnapshot = await getDoc(adminDocRef);
       if (adminDocSnapshot.exists()) {
         const adminData = adminDocSnapshot.data();
-        if (adminData.password === password) {
+        const passwordMatch = await bcrypt.compare(
+          password,
+          adminData.password
+        );
+        if (passwordMatch) {
           if (currentEmail === adminData.email) {
             await deleteDoc(adminDocRef);
             localStorage.removeItem("authToken");
@@ -149,6 +170,40 @@ function Manage() {
       <Box sx={{ marginLeft: margins.showMargin }}>
         <Card variant="outlined">
           <CardContent>
+            <Box
+              sx={{
+                display: "grid",
+                gridTemplateColumns: "repeat(6, 1fr)",
+                gridColumnGap: 10,
+                marginBottom: "20px",
+                "& .MuiTextField-root": {
+                  height: "45px",
+                },
+              }}
+            >
+              <TextField
+                label="ค้นหา ID"
+                variant="outlined"
+                name="uid"
+                fullWidth
+                margin="normal"
+                onChange={handleSearch}
+                InputLabelProps={{
+                  style: { fontSize: "14px" },
+                }}
+              />
+              <TextField
+                label="ค้นหา EMAIL"
+                variant="outlined"
+                name="email"
+                fullWidth
+                margin="normal"
+                onChange={handleSearch}
+                InputLabelProps={{
+                  style: { fontSize: "14px" },
+                }}
+              />
+            </Box>
             <form>
               <Box sx={{ overflow: { xs: "auto", sm: "unset" } }}>
                 <Table aria-label="simple table" className={classes.table}>
@@ -196,7 +251,7 @@ function Manage() {
                     </TableCell>
                   </TableHead>
                   <TableBody>
-                    {userData.map((user, index) => (
+                    {filteredTrips.map((user, index) => (
                       <TableRow key={index}>
                         <TableCell>{user.uid || "N/A"}</TableCell>
                         <TableCell>{user.email || "N/A"}</TableCell>

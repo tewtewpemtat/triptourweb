@@ -13,15 +13,22 @@ import {
   TableRow,
   Card,
   CardContent,
+  Select,
+  MenuItem,
+  InputLabel,
+  FormControl,
+  TextField,
 } from "@mui/material";
 import Navbar from "../navbar";
 import "./showtimeline.css";
 import { Link, useNavigate } from "react-router-dom";
 import CreateIcon from "@mui/icons-material/Create";
 import DeleteIcon from "@mui/icons-material/Delete";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 import IconButton from "@mui/material/IconButton";
 import { makeStyles } from "@material-ui/core/styles";
-import { margins } from '../styles/margin'
+import { margins } from "../styles/margin";
 const useStyles = makeStyles((theme) => ({
   table: {
     borderCollapse: "collapse",
@@ -45,7 +52,9 @@ function ShowTimeLine() {
   const [userData, setUserData] = useState([]);
   const navigate = useNavigate();
   const classes = useStyles();
-
+  const [searchTerm, setSearchTerm] = useState("");
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
   useEffect(() => {
     const authToken = localStorage.getItem("authToken");
     if (!authToken) {
@@ -72,6 +81,26 @@ function ShowTimeLine() {
     fetchUserData();
   }, []);
 
+  const handleSearch = (event) => {
+    setSearchTerm(event.target.value.toLowerCase());
+  };
+
+  const filteredTrips = userData.filter((place) => {
+    const placeStartDate = place.intime?.toDate();
+    const placeEndDate = place.outtime?.toDate();
+    const matchesSearchTerm =
+      place.uid?.toLowerCase().includes(searchTerm) ||
+      place.placeid?.toLowerCase().includes(searchTerm) ||
+      place.placetripid?.toLowerCase().includes(searchTerm) ||
+      place.useruid?.toLowerCase().includes(searchTerm) ||
+      place.distance?.toString().toLowerCase().includes(searchTerm);
+    const matchesDateRange =
+      (!startDate || (placeStartDate && placeStartDate >= startDate)) &&
+      (!endDate || (placeEndDate && placeEndDate <= endDate));
+
+    return matchesSearchTerm && matchesDateRange;
+  });
+
   const handleDeleteUser = async (uid) => {
     const confirmed = window.confirm("โปรดยืนยันการลบข้อมูล");
     if (confirmed) {
@@ -89,9 +118,120 @@ function ShowTimeLine() {
   return (
     <div>
       <Navbar />
-      <Box sx={{ marginLeft: margins.showMargin}}>
+      <Box sx={{ marginLeft: margins.showMargin }}>
         <Card variant="outlined">
           <CardContent>
+            <Box
+              sx={{
+                display: "grid",
+                gridTemplateColumns: "repeat(5, 1fr)",
+                gridColumnGap: 10,
+                marginBottom: "20px",
+                "& .MuiTextField-root": {
+                  height: "45px",
+                },
+              }}
+            >
+              <TextField
+                label="ค้นหา ID"
+                variant="outlined"
+                name="uid"
+                fullWidth
+                margin="normal"
+                onChange={handleSearch}
+                InputLabelProps={{
+                  style: { fontSize: "14px" },
+                }}
+              />
+              <TextField
+                label="ค้นหา PLACEID"
+                variant="outlined"
+                name="placeid"
+                fullWidth
+                margin="normal"
+                onChange={handleSearch}
+                InputLabelProps={{
+                  style: { fontSize: "14px" },
+                }}
+              />
+              <TextField
+                label="ค้นหา PLACETRIPID"
+                variant="outlined"
+                name="placetripid"
+                fullWidth
+                margin="normal"
+                onChange={handleSearch}
+                InputLabelProps={{
+                  style: { fontSize: "14px" },
+                }}
+              />
+              <TextField
+                label="ค้นหา USERUID"
+                variant="outlined"
+                name="useruid"
+                fullWidth
+                margin="normal"
+                onChange={handleSearch}
+                InputLabelProps={{
+                  style: { fontSize: "14px" },
+                }}
+              />
+
+              <TextField
+                label="ค้นหา DISTANCE"
+                variant="outlined"
+                name="distance"
+                fullWidth
+                margin="normal"
+                onChange={handleSearch}
+                InputLabelProps={{
+                  style: { fontSize: "14px" },
+                }}
+              />
+              <Box sx={{ display: "flex", gap: 1.5, marginTop: "16px" }}>
+                <DatePicker
+                  id="intime"
+                  selected={startDate}
+                  onChange={(date) => setStartDate(date)}
+                  showTimeSelect
+                  timeFormat="HH:mm"
+                  timeIntervals={15}
+                  timeCaption="Time"
+                  dateFormat="dd/MM/yyyy HH:mm"
+                  locale="th"
+                  className="input"
+                  customInput={
+                    <TextField
+                      variant="outlined"
+                      fullWidth
+                      label="ค้นหา INTIME"
+                      InputLabelProps={{ shrink: true }}
+                      style={{ width: "150%", marginRight: "56px" }}
+                    />
+                  }
+                />
+                <DatePicker
+                  id="outtime"
+                  selected={endDate}
+                  onChange={(date) => setEndDate(date)}
+                  showTimeSelect
+                  timeFormat="HH:mm"
+                  timeIntervals={15}
+                  timeCaption="Time"
+                  dateFormat="dd/MM/yyyy HH:mm"
+                  className="input"
+                  customInput={
+                    <TextField
+                      variant="outlined"
+                      fullWidth
+                      label="ค้นหา OUTTIME"
+                      InputLabelProps={{ shrink: true }}
+                      style={{ width: "150%", marginLeft: "56px" }}
+                    />
+                  }
+                />
+              </Box>
+            </Box>
             <Box sx={{ overflow: { xs: "auto", sm: "unset" } }}>
               <Table aria-label="simple table" className={classes.table}>
                 <TableHead>
@@ -187,7 +327,7 @@ function ShowTimeLine() {
                       OUTTIME
                     </Typography>
                   </TableCell>
-                  <TableCell style={{ backgroundColor: "transparent"}}>
+                  <TableCell style={{ backgroundColor: "transparent" }}>
                     <Typography
                       variant="subtitle1"
                       style={{
@@ -196,15 +336,15 @@ function ShowTimeLine() {
                         fontFamily: "Arial, sans-serif",
                         color: "#4a5568",
                         width: "90px",
-                        paddingLeft: "20px"
+                        paddingLeft: "20px",
                       }}
                     >
-                     ACTION
+                      ACTION
                     </Typography>
                   </TableCell>
                 </TableHead>
                 <TableBody>
-                  {userData.map((user, index) => (
+                  {filteredTrips.map((user, index) => (
                     <TableRow key={index}>
                       <TableCell>{user.uid || "N/A"}</TableCell>
                       <TableCell>{user.placeid || "N/A"}</TableCell>

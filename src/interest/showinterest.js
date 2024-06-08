@@ -24,12 +24,17 @@ import {
   TableRow,
   Card,
   CardContent,
+  Select,
+  MenuItem,
+  InputLabel,
+  FormControl,
+  TextField,
 } from "@mui/material";
 import { makeStyles } from "@material-ui/core/styles";
 import CreateIcon from "@mui/icons-material/Create";
 import DeleteIcon from "@mui/icons-material/Delete";
 import IconButton from "@mui/material/IconButton";
-import { margins } from '../styles/margin'
+import { margins } from "../styles/margin";
 const useStyles = makeStyles((theme) => ({
   table: {
     borderCollapse: "collapse",
@@ -55,6 +60,7 @@ function ShowInterest() {
   const [tripData, setUserData] = useState([]);
   const navigate = useNavigate();
   const classes = useStyles();
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     const authToken = localStorage.getItem("authToken");
@@ -81,6 +87,22 @@ function ShowInterest() {
 
     fetchUserData();
   }, [userId]);
+  const handleSearch = (event) => {
+    setSearchTerm(event.target.value.toLowerCase());
+  };
+
+  const filteredTrips = tripData.filter((place) => {
+    const matchesSearchTerm =
+      place.uid?.toLowerCase().includes(searchTerm) ||
+      place.placeid?.toLowerCase().includes(searchTerm) ||
+      place.placeaddress?.toLowerCase().includes(searchTerm) ||
+      place.placeLongitude?.toString().toLowerCase().includes(searchTerm) ||
+      place.placeLatitude?.toString().toLowerCase().includes(searchTerm) ||
+      place.useruid?.toLowerCase().includes(searchTerm) ||
+      place.placetripid?.toLowerCase().includes(searchTerm);
+
+    return matchesSearchTerm;
+  });
 
   const handleDeleteUser = async (uid) => {
     const confirmed = window.confirm("โปรดยืนยันการลบข้อมูล");
@@ -102,6 +124,95 @@ function ShowInterest() {
       <Box sx={{ marginLeft: margins.showMargin }}>
         <Card variant="outlined">
           <CardContent>
+            <Box
+              sx={{
+                display: "grid",
+                gridTemplateColumns: "repeat(5, 1fr)",
+                gridColumnGap: 10,
+                marginBottom: "20px",
+                "& .MuiTextField-root": {
+                  height: "45px",
+                },
+              }}
+            >
+              <TextField
+                label="ค้นหา ID"
+                variant="outlined"
+                name="uid"
+                fullWidth
+                margin="normal"
+                onChange={handleSearch}
+                InputLabelProps={{
+                  style: { fontSize: "14px" },
+                }}
+              />
+              <TextField
+                label="ค้นหา PLACEID"
+                variant="outlined"
+                name="placeid"
+                fullWidth
+                margin="normal"
+                onChange={handleSearch}
+                InputLabelProps={{
+                  style: { fontSize: "14px" },
+                }}
+              />
+              <TextField
+                label="ค้นหา PLACEADDRESS"
+                variant="outlined"
+                name="placeaddress"
+                fullWidth
+                margin="normal"
+                onChange={handleSearch}
+                InputLabelProps={{
+                  style: { fontSize: "14px" },
+                }}
+              />
+              <TextField
+                label="ค้นหา PLACETRIPID"
+                variant="outlined"
+                name="placetripid"
+                fullWidth
+                margin="normal"
+                onChange={handleSearch}
+                InputLabelProps={{
+                  style: { fontSize: "14px" },
+                }}
+              />
+              <TextField
+                label="ค้นหา LATITUDE"
+                variant="outlined"
+                name="placeLatitude"
+                fullWidth
+                margin="normal"
+                onChange={handleSearch}
+                InputLabelProps={{
+                  style: { fontSize: "14px" },
+                }}
+              />
+              <TextField
+                label="ค้นหา LONGITUDE"
+                variant="outlined"
+                name="placeLongitude"
+                fullWidth
+                margin="normal"
+                onChange={handleSearch}
+                InputLabelProps={{
+                  style: { fontSize: "14px" },
+                }}
+              />
+              <TextField
+                label="ค้นหา USERUID"
+                variant="outlined"
+                name="useruid"
+                fullWidth
+                margin="normal"
+                onChange={handleSearch}
+                InputLabelProps={{
+                  style: { fontSize: "14px" },
+                }}
+              />
+            </Box>
             <Box sx={{ overflow: { xs: "auto", sm: "unset" } }}>
               <TableContainer>
                 <Table staria-label="simple table" className={classes.table}>
@@ -227,7 +338,7 @@ function ShowInterest() {
                     </TableCell>
                   </TableHead>
                   <TableBody>
-                    {tripData.map((user, index) => (
+                    {filteredTrips.map((user, index) => (
                       <TableRow key={index}>
                         <TableCell>{user.uid || "N/A"}</TableCell>
                         <TableCell>{user.placeid || "N/A"}</TableCell>

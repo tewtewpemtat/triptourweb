@@ -39,6 +39,9 @@ function EditUser() {
   const [userData, setUserData] = useState({});
   const [profileImage, setProfileImage] = useState(null);
   const [gender, setGender] = useState("");
+  const [profileStatus, setProfileStatus] = useState("");
+  const [friendList, setFriendList] = useState([]);
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -49,6 +52,9 @@ function EditUser() {
         if (userSnapshot.exists()) {
           setUserData(userSnapshot.data());
           setGender(userSnapshot.data().gender || "");
+          setProfileStatus(userSnapshot.data().profileStatus || "");
+          setFriendList(userSnapshot.data().friendList || []);
+
         } else {
           console.log("No such document!");
         }
@@ -120,7 +126,33 @@ function EditUser() {
       return null;
     }
   };
+  const handlefriendList = (index, newValue) => {
+    const updatedfriendList = [...friendList];
+    updatedfriendList[index] = newValue;
+    setFriendList(updatedfriendList);
+    setUserData((prevData) => ({
+      ...prevData,
+      friendList: updatedfriendList,
+    }));
+  };
 
+  const handleAddfriendList = () => {
+    setFriendList((prevfriendList) => [...prevfriendList, ""]);
+    setUserData((prevData) => ({
+      ...prevData,
+      friendList: [...prevData.friendList, ""],
+    }));
+  };
+
+  const handleRemovefriendList = (index) => {
+    const updatedfriendList = [...friendList];
+    updatedfriendList.splice(index, 1);
+    setFriendList(updatedfriendList);
+    setUserData((prevData) => ({
+      ...prevData,
+      friendList: updatedfriendList,
+    }));
+  };
   const handleSubmit = () => {
     handleUpdateUser();
   };
@@ -132,7 +164,14 @@ function EditUser() {
       gender: value,
     }));
   };
-
+  const handleStatusChange = (e) => {
+    const value = e.target.value;
+    setProfileStatus(value);
+    setUserData((prevData) => ({
+      ...prevData,
+      profileStatus: value,
+    }));
+  };
   return (
     <div>
       <Navbar />
@@ -213,7 +252,52 @@ function EditUser() {
                       />
                     </Grid>
                   </Grid>
-
+                  <Grid style={{ marginBottom: "10px" }} container spacing={2}>
+                    <Grid item lg={6}>
+                      <div>
+                        <label>FriendList : </label>
+                        <ul>
+                          {friendList.map((item, index) => (
+                            <div key={index}>
+                              <Grid container spacing={2} key={index}>
+                                <Grid item xs={10}>
+                                  <TextField
+                                    id={`friendList-${index}`}
+                                    variant="outlined"
+                                    fullWidth
+                                    style={{ marginBottom: "8px" }}
+                                    value={item}
+                                    onChange={(e) =>
+                                      handlefriendList(
+                                        index,
+                                        e.target.value
+                                      )
+                                    }
+                                  />
+                                </Grid>
+                                <Grid item xs={2}>
+                                  <Button
+                                    style={{
+                                      marginTop: "5px",
+                                      marginBottom: "5px",
+                                      backgroundColor: "red",
+                                    }}
+                                    variant="contained"
+                                    onClick={() => handleRemovefriendList(index)}
+                                  >
+                                    ลบ
+                                  </Button>
+                                </Grid>
+                              </Grid>
+                            </div>
+                          ))}
+                        </ul>
+                        <Button variant="contained" onClick={handleAddfriendList}>
+                          เพิ่ม
+                        </Button>
+                      </div>
+                    </Grid>
+                  </Grid>
                   <FormControl fullWidth sx={{ mb: 2 }}>
                     <Grid container spacing={2} alignItems="center">
                       <Grid item>
@@ -239,7 +323,31 @@ function EditUser() {
                           <FormControlLabel
                             value="เพศทางเลือก"
                             control={<Radio />}
-                            label="อื่นๆ"
+                            label="เพศทางเลือก"
+                          />
+                        </RadioGroup>
+                      </Grid>
+                    </Grid>
+                    <Grid container spacing={2} alignItems="center">
+                      <Grid item>
+                        <Typography sx={{ mr: 1 }}>Profile Status : </Typography>
+                      </Grid>
+                      <Grid item>
+                        <RadioGroup
+                          row
+                          name="profileStatus"
+                          value={profileStatus}
+                          onChange={handleStatusChange}
+                        >
+                          <FormControlLabel
+                            value="None"
+                            control={<Radio />}
+                            label="None"
+                          />
+                          <FormControlLabel
+                            value="Completed"
+                            control={<Radio />}
+                            label="Completed"
                           />
                         </RadioGroup>
                       </Grid>

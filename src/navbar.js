@@ -61,9 +61,12 @@ function Navbar() {
   const navigate = useNavigate();
 
   const handleLogout = async () => {
-    localStorage.removeItem("authToken");
-    localStorage.removeItem("email");
-    navigate("/login", { replace: true });
+    const confirmation = window.confirm("โปรดยืนยืนการออกจากระบบ");
+    if (confirmation) {
+      localStorage.removeItem("authToken");
+      localStorage.removeItem("email");
+      navigate("/login", { replace: true });
+    }
   };
 
   return (

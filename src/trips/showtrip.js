@@ -25,12 +25,16 @@ import {
   TableRow,
   Card,
   CardContent,
+  Select,
+  MenuItem,
+  InputLabel,
+  FormControl,
 } from "@mui/material";
 import { makeStyles } from "@material-ui/core/styles";
 import CreateIcon from "@mui/icons-material/Create";
 import DeleteIcon from "@mui/icons-material/Delete";
 import IconButton from "@mui/material/IconButton";
-import { margins } from '../styles/margin'
+import { margins } from "../styles/margin";
 const useStyles = makeStyles((theme) => ({
   table: {
     borderCollapse: "collapse",
@@ -89,22 +93,20 @@ function ShowTrip() {
   };
 
   const filteredTrips = tripData.filter((trip) => {
-    return (
+    const tripStartDate = trip.tripStartDate?.toDate();
+    const tripEndDate = trip.tripEndDate?.toDate();
+
+    const matchesSearchTerm =
       trip.uid?.toLowerCase().includes(searchTerm) ||
       trip.tripCreate?.toLowerCase().includes(searchTerm) ||
       trip.tripName?.toLowerCase().includes(searchTerm) ||
-      trip.tripStartDate
-        ?.toDate()
-        .toLocaleDateString("th-TH")
-        .toLowerCase()
-        .includes(searchTerm) ||
-      trip.tripEndDate
-        ?.toDate()
-        .toLocaleDateString("th-TH")
-        .toLowerCase()
-        .includes(searchTerm) ||
-      trip.tripStatus?.toLowerCase().includes(searchTerm)
-    );
+      trip.tripStatus?.toLowerCase().includes(searchTerm);
+
+    const matchesDateRange =
+      (!startDate || (tripStartDate && tripStartDate >= startDate)) &&
+      (!endDate || (tripEndDate && tripEndDate <= endDate));
+
+    return matchesSearchTerm && matchesDateRange;
   });
 
   const handleDeleteUser = async (uid) => {
@@ -132,8 +134,10 @@ function ShowTrip() {
                 display: "grid",
                 gridTemplateColumns: "repeat(4, 1fr)",
                 gridColumnGap: 10,
-            
                 marginBottom: "10px",
+                "& .MuiTextField-root": {
+                  height: "70px",
+                },
               }}
             >
               <TextField
@@ -142,70 +146,92 @@ function ShowTrip() {
                 name="uid"
                 fullWidth
                 margin="normal"
-                onChange={handleSearch}
+                onChange={handleSearch} InputLabelProps={{
+                  style: { fontSize: "14px" },
+                }}
               />
               <TextField
-                label="ค้นหา TripCreate"
+                label="ค้นหา TRIPCREATE"
                 variant="outlined"
                 name="tripCreate"
                 fullWidth
                 margin="normal"
-                onChange={handleSearch}
+                onChange={handleSearch} InputLabelProps={{
+                  style: { fontSize: "14px" },
+                }}
               />
               <TextField
-                label="ค้นหา Name"
+                label="ค้นหา TRIPNAME"
                 variant="outlined"
                 name="tripName"
                 fullWidth
                 margin="normal"
-                onChange={handleSearch}
+                onChange={handleSearch} InputLabelProps={{
+                  style: { fontSize: "14px" },
+                }}
               />
-              <TextField
-                label="ค้นหา Status"
-                variant="outlined"
-                name="tripStatus"
-                fullWidth
-                margin="normal"
-                onChange={handleSearch}
-              />
-              <DatePicker
-                id="tripStart"
-                selected={startDate}
-                onChange={(date) => setStartDate(date)}
-                showTimeSelect
-                timeFormat="HH:mm"
-                timeIntervals={15}
-                timeCaption="Time"
-                dateFormat="dd/MM/yyyy HH:mm"
-                className="input"
-                customInput={
-                  <TextField
-                    variant="outlined"
-                    fullWidth
-                    label="Start Date"
-                    InputLabelProps={{ shrink: true }}
-                  />
-                }
-              />
-              <DatePicker
-                id="tripEnd"
-                selected={endDate}
-                onChange={(date) => setEndDate(date)}
-                showTimeSelect
-                timeFormat="HH:mm"
-                timeIntervals={15}
-                timeCaption="Time"
-                dateFormat="dd/MM/yyyy HH:mm"
-                className="input"
-                customInput={
-                  <TextField
-                    variant="outlined"
-                    fullWidth
-                    label="End Date"
-                    InputLabelProps={{ shrink: true }}
-                  />
-                }
-              />
+              <FormControl variant="outlined" fullWidth margin="normal">
+                <InputLabel id="status-select-label"  style={{ fontSize: "14px" }}>ค้นหา STATUS</InputLabel>
+                <Select
+                  labelId="status-select-label"
+                  label="ค้นหา STATUS"
+                  variant="outlined"
+                  name="tripStatus"
+                  fullWidth
+                  value={searchTerm}
+                  onChange={(event) =>
+                    setSearchTerm(event.target.value.toLowerCase())
+                  }
+                >
+                  <MenuItem value="">-- เลือกสถานะ --</MenuItem>
+                  <MenuItem value="ยังไม่เริ่มต้น">ยังไม่เริ่มต้น</MenuItem>
+                  <MenuItem value="กำลังดำเนินการ">กำลังดำเนินการ</MenuItem>
+                  <MenuItem value="สิ้นสุด">สิ้นสุด</MenuItem>
+                </Select>
+              </FormControl>
+              <Box sx={{ display: "flex", gap: 1 }}>
+                <DatePicker
+                  id="tripStart"
+                  selected={startDate}
+                  onChange={(date) => setStartDate(date)}
+                  showTimeSelect
+                  timeFormat="HH:mm"
+                  timeIntervals={15}
+                  timeCaption="Time"
+                  dateFormat="dd/MM/yyyy HH:mm"
+                  locale="th"
+                  className="input"
+                  customInput={
+                    <TextField
+                      variant="outlined"
+                      fullWidth
+                      label="ค้นหา START DATE"
+                      InputLabelProps={{ shrink: true }}
+                      style={{ width: "120%", marginRight: "33px" }}
+                    />
+                  }
+                />
+                <DatePicker
+                  id="tripEnd"
+                  selected={endDate}
+                  onChange={(date) => setEndDate(date)}
+                  showTimeSelect
+                  timeFormat="HH:mm"
+                  timeIntervals={15}
+                  timeCaption="Time"
+                  dateFormat="dd/MM/yyyy HH:mm"
+                  className="input"
+                  customInput={
+                    <TextField
+                      variant="outlined"
+                      fullWidth
+                      label="ค้นหา END DATE"
+                      InputLabelProps={{ shrink: true }}
+                      style={{ width: "120%", marginLeft: "33px" }}
+                    />
+                  }
+                />
+              </Box>
             </Box>
             <Box sx={{ overflow: { xs: "auto", sm: "unset" } }}>
               <Table aria-label="simple table" className={classes.table}>
