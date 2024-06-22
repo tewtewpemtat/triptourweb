@@ -9,9 +9,9 @@ import Navbar from "../navbar";
 import { storage } from "../firebase";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import PhotoIcon from "@mui/icons-material/Photo";
-import DatePicker from "react-datepicker"; 
-import "react-datepicker/dist/react-datepicker.css"; 
-import { margins } from '../styles/margin'
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import { margins } from "../styles/margin";
 import {
   Card,
   CardContent,
@@ -33,8 +33,8 @@ import {
 function EditTimeLine() {
   const { userId } = useParams();
   const [userData, setUserData] = useState({});
-  const [intime, setIntime] = useState(new Date()); 
-  const [outtime, setOuttime] = useState(new Date()); 
+  const [intime, setIntime] = useState(new Date());
+  const [outtime, setOuttime] = useState(new Date());
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -45,14 +45,14 @@ function EditTimeLine() {
         if (userSnapshot.exists()) {
           setUserData(userSnapshot.data());
           if (userSnapshot.data().intime) {
-            setIntime(
-              new Date(userSnapshot.data().intime.seconds * 1000)
-            );
+            setIntime(new Date(userSnapshot.data().intime.seconds * 1000));
           }
           if (userSnapshot.data().outtime) {
-            setOuttime(
-              new Date(userSnapshot.data().outtime.seconds * 1000)
-            );
+            if (typeof userSnapshot.data().outtime === "string") {
+              setOuttime(null);
+            } else {
+              setOuttime(new Date(userSnapshot.data().outtime.seconds * 1000));
+            }
           }
         } else {
           console.log("No such document!");
@@ -90,7 +90,7 @@ function EditTimeLine() {
   return (
     <div>
       <Navbar />
-      <div style={{ marginLeft: margins.editMargin}}>
+      <div style={{ marginLeft: margins.editMargin }}>
         <Grid container spacing={0}>
           <Grid item lg={12} md={12} xs={12}>
             <Card variant="outlined">
