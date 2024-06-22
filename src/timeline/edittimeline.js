@@ -79,9 +79,11 @@ function EditTimeLine() {
     const { id, value } = e.target;
     setUserData((prevData) => ({
       ...prevData,
-      [id]: value,
+      [id]: id === 'distance' ? parseInt(value, 10) : value,
     }));
   };
+  
+
 
   const handleSubmit = () => {
     handleUpdateUser();
