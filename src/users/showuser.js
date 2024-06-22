@@ -105,7 +105,7 @@ function ShowUser() {
       user.nickname?.toLowerCase().includes(searchTerm) || 
     user.contactNumber?.toLowerCase().includes(searchTerm) || 
     user.gender?.toLowerCase().includes(searchTerm) ||
-    user.profileStatus?.toLowerCase().includes(searchTerm);
+    user.profileStatus?.includes(searchTerm);
 
     return matchesSearchTerm;
   });
@@ -221,7 +221,7 @@ function ShowUser() {
                   fullWidth
                   value={searchTerm}
                   onChange={(event) =>
-                    setSearchTerm(event.target.value.toLowerCase())
+                    setSearchTerm(event.target.value)
                   }
                 >
                   <MenuItem value="">-- เลือกสถานะ --</MenuItem>

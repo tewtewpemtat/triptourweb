@@ -110,9 +110,9 @@ function ShowPlace() {
       place.placeaddress?.toLowerCase().includes(searchTerm) ||
       place.placeLatitude.toString().toLowerCase().includes(searchTerm) ||
       place.placeLongitude.toString().toLowerCase().includes(searchTerm) ||
-      place.placeadd?.toLowerCase().includes(searchTerm) ||
-      place.placerun?.toLowerCase().includes(searchTerm) ||
-      place.placestatus?.toLowerCase().includes(searchTerm) ||
+      place.placeadd?.includes(searchTerm) ||
+      place.placerun?.includes(searchTerm) ||
+      place.placestatus?.includes(searchTerm) ||
       place.placetripid?.toLowerCase().includes(searchTerm) ||
       place.useruid?.toLowerCase().includes(searchTerm) ||
       place.province?.toLowerCase().includes(searchTerm);
@@ -234,7 +234,7 @@ function ShowPlace() {
                   fullWidth
                   value={searchTerm}
                   onChange={(event) =>
-                    setSearchTerm(event.target.value.toLowerCase())
+                    setSearchTerm(event.target.value)
                   }
                 >
                   <MenuItem value="">-- เลือกสถานะ --</MenuItem>
@@ -257,7 +257,7 @@ function ShowPlace() {
                   fullWidth
                   value={searchTerm}
                   onChange={(event) =>
-                    setSearchTerm(event.target.value.toLowerCase())
+                    setSearchTerm(event.target.value)
                   }
                 >
                   <MenuItem value="">-- เลือกสถานะ --</MenuItem>
@@ -281,7 +281,7 @@ function ShowPlace() {
                   fullWidth
                   value={searchTerm}
                   onChange={(event) =>
-                    setSearchTerm(event.target.value.toLowerCase())
+                    setSearchTerm(event.target.value)
                   }
                 >
                   <MenuItem value="">-- เลือกสถานะ --</MenuItem>
