@@ -347,7 +347,7 @@ function ShowPlaceMeet() {
                         PLACEPIC
                       </Typography>
                     </TableCell>
-                    <TableCell style={{ backgroundColor: "transparent" }}>
+                    {/* <TableCell style={{ backgroundColor: "transparent" }}>
                       <Typography
                         variant="subtitle1"
                         style={{
@@ -361,7 +361,7 @@ function ShowPlaceMeet() {
                       >
                         ACTION
                       </Typography>
-                    </TableCell>
+                    </TableCell> */}
                   </TableHead>
                   <TableBody>
                     {filteredTrips.map((user, index) => (
@@ -389,7 +389,7 @@ function ShowPlaceMeet() {
                             "N/A"
                           )}
                         </TableCell>
-                        <TableCell>
+                        {/* <TableCell>
                           <Link
                             to={`/editplacemeet/${user.placetripid}/${user.uid}`}
                           >
@@ -402,7 +402,7 @@ function ShowPlaceMeet() {
                           >
                             <DeleteIcon />
                           </IconButton>
-                        </TableCell>
+                        </TableCell> */}
                       </TableRow>
                     ))}
                   </TableBody>

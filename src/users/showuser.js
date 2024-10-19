@@ -351,7 +351,7 @@ function ShowUser() {
                       PROFILEIMAGE
                     </Typography>
                   </TableCell>
-                  <TableCell style={{ backgroundColor: "transparent" }}>
+                  {/* <TableCell style={{ backgroundColor: "transparent" }}>
                     <Typography
                       variant="subtitle1"
                       style={{
@@ -365,7 +365,7 @@ function ShowUser() {
                     >
                       ACTION
                     </Typography>
-                  </TableCell>
+                  </TableCell> */}
                 </TableHead>
                 <TableBody>
                   {filteredTrips.map((user, index) => (
@@ -393,7 +393,7 @@ function ShowUser() {
                           "N/A"
                         )}
                       </TableCell>
-                      <TableCell>
+                      {/* <TableCell>
                         <Link to={`/edituser/${user.uid}`}>
                           <IconButton>
                             <CreateIcon />
@@ -402,7 +402,7 @@ function ShowUser() {
                         <IconButton onClick={() => handleDeleteUser(user.uid)}>
                           <DeleteIcon />
                         </IconButton>
-                      </TableCell>
+                      </TableCell> */}
                     </TableRow>
                   ))}
                 </TableBody>

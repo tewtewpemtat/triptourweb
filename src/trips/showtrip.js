@@ -353,7 +353,7 @@ function ShowTrip() {
                       TRIPPROFILE
                     </Typography>
                   </TableCell>
-                  <TableCell style={{ backgroundColor: "transparent" }}>
+                  {/* <TableCell style={{ backgroundColor: "transparent" }}>
                     <Typography
                       variant="subtitle1"
                       style={{
@@ -367,7 +367,7 @@ function ShowTrip() {
                     >
                       ACTION
                     </Typography>
-                  </TableCell>
+                  </TableCell> */}
                 </TableHead>
                 <TableBody>
                   {filteredTrips.map((user, index) => (
@@ -411,7 +411,7 @@ function ShowTrip() {
                           "N/A"
                         )}
                       </TableCell>
-                      <TableCell>
+                      {/* <TableCell>
                         <Link to={`/edittrip/${user.uid}`}>
                           <IconButton>
                             <CreateIcon />
@@ -420,7 +420,7 @@ function ShowTrip() {
                         <IconButton onClick={() => handleDeleteUser(user.uid)}>
                           <DeleteIcon />
                         </IconButton>
-                      </TableCell>
+                      </TableCell> */}
                     </TableRow>
                   ))}
                 </TableBody>

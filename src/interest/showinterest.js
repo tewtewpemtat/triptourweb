@@ -321,7 +321,7 @@ function ShowInterest() {
                         PLACEPIC
                       </Typography>
                     </TableCell>
-                    <TableCell style={{ backgroundColor: "transparent" }}>
+                    {/* <TableCell style={{ backgroundColor: "transparent" }}>
                       <Typography
                         variant="subtitle1"
                         style={{
@@ -335,7 +335,7 @@ function ShowInterest() {
                       >
                         ACTION
                       </Typography>
-                    </TableCell>
+                    </TableCell> */}
                   </TableHead>
                   <TableBody>
                     {filteredTrips.map((user, index) => (
@@ -362,7 +362,7 @@ function ShowInterest() {
                             "N/A"
                           )}
                         </TableCell>
-                        <TableCell>
+                        {/* <TableCell>
                           <Link
                             to={`/editinterest/${user.placetripid}/${user.uid}`}
                           >
@@ -375,7 +375,7 @@ function ShowInterest() {
                           >
                             <DeleteIcon />
                           </IconButton>
-                        </TableCell>
+                        </TableCell> */}
                       </TableRow>
                     ))}
                   </TableBody>

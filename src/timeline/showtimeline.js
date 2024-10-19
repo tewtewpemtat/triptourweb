@@ -339,7 +339,7 @@ function ShowTimeLine() {
                       OUTTIME
                     </Typography>
                   </TableCell>
-                  <TableCell style={{ backgroundColor: "transparent" }}>
+                  {/* <TableCell style={{ backgroundColor: "transparent" }}>
                     <Typography
                       variant="subtitle1"
                       style={{
@@ -353,7 +353,7 @@ function ShowTimeLine() {
                     >
                       ACTION
                     </Typography>
-                  </TableCell>
+                  </TableCell> */}
                 </TableHead>
                 <TableBody>
                   {filteredTrips.map((user, index) => (
@@ -384,7 +384,7 @@ function ShowTimeLine() {
                               .toLocaleTimeString("th-TH")}`
                           : "N/A"}
                       </TableCell>
-                      <TableCell>
+                      {/* <TableCell>
                         <Link to={`/edittimeline/${user.uid}`}>
                           <IconButton>
                             <CreateIcon />
@@ -393,7 +393,7 @@ function ShowTimeLine() {
                         <IconButton onClick={() => handleDeleteUser(user.uid)}>
                           <DeleteIcon />
                         </IconButton>
-                      </TableCell>
+                      </TableCell> */}
                     </TableRow>
                   ))}
                 </TableBody>
