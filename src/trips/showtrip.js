@@ -15,6 +15,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import {
   Typography,
   Box,
+  Button,
   Chip,
   Table,
   TextField,
@@ -146,7 +147,8 @@ function ShowTrip() {
                 name="uid"
                 fullWidth
                 margin="normal"
-                onChange={handleSearch} InputLabelProps={{
+                onChange={handleSearch}
+                InputLabelProps={{
                   style: { fontSize: "14px" },
                 }}
               />
@@ -156,7 +158,8 @@ function ShowTrip() {
                 name="tripCreate"
                 fullWidth
                 margin="normal"
-                onChange={handleSearch} InputLabelProps={{
+                onChange={handleSearch}
+                InputLabelProps={{
                   style: { fontSize: "14px" },
                 }}
               />
@@ -166,12 +169,18 @@ function ShowTrip() {
                 name="tripName"
                 fullWidth
                 margin="normal"
-                onChange={handleSearch} InputLabelProps={{
+                onChange={handleSearch}
+                InputLabelProps={{
                   style: { fontSize: "14px" },
                 }}
               />
               <FormControl variant="outlined" fullWidth margin="normal">
-                <InputLabel id="status-select-label"  style={{ fontSize: "14px" }}>ค้นหา STATUS</InputLabel>
+                <InputLabel
+                  id="status-select-label"
+                  style={{ fontSize: "14px" }}
+                >
+                  ค้นหา STATUS
+                </InputLabel>
                 <Select
                   labelId="status-select-label"
                   label="ค้นหา STATUS"
@@ -353,7 +362,7 @@ function ShowTrip() {
                       TRIPPROFILE
                     </Typography>
                   </TableCell>
-                  {/* <TableCell style={{ backgroundColor: "transparent" }}>
+                  <TableCell style={{ backgroundColor: "transparent" }}>
                     <Typography
                       variant="subtitle1"
                       style={{
@@ -367,7 +376,7 @@ function ShowTrip() {
                     >
                       ACTION
                     </Typography>
-                  </TableCell> */}
+                  </TableCell>
                 </TableHead>
                 <TableBody>
                   {filteredTrips.map((user, index) => (
@@ -411,16 +420,29 @@ function ShowTrip() {
                           "N/A"
                         )}
                       </TableCell>
-                      {/* <TableCell>
-                        <Link to={`/edittrip/${user.uid}`}>
+                      <TableCell>
+                        <Link
+                          to={`/place/${user.uid}`}
+                          style={{ marginLeft: "auto" }}
+                        >
+                          <Button
+                            color="primary"
+                            variant="contained"
+                            type="button"      size="small"    style={{ padding: "4px 8px" }} 
+
+                          >
+                            ข้อมูลสถานที่
+                          </Button>
+                        </Link>
+                        {/* <Link to={`/edittrip/${user.uid}`}>
                           <IconButton>
                             <CreateIcon />
                           </IconButton>
-                        </Link>
-                        <IconButton onClick={() => handleDeleteUser(user.uid)}>
+                        </Link> */}
+                        {/* <IconButton onClick={() => handleDeleteUser(user.uid)}>
                           <DeleteIcon />
-                        </IconButton>
-                      </TableCell> */}
+                        </IconButton> */}
+                      </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
